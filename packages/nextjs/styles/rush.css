@@ -1,0 +1,379 @@
+/* Mumbai Local Rush animations. Units: cqh = 1% of the 16:9 projector stage height. */
+
+.rush-stage {
+  container-type: size;
+}
+
+.rush-stroke {
+  paint-order: stroke fill;
+  -webkit-text-stroke: 0.9cqh #1a0f0a;
+  text-shadow: 0 0.6cqh 0 #1a0f0a;
+}
+
+@keyframes rush-pop {
+  0% {
+    transform: translate(-50%, -50%) scale(0) translateY(-30%);
+  }
+  55% {
+    transform: translate(-50%, -50%) scale(calc(var(--s, 1) * 1.35));
+  }
+  75% {
+    transform: translate(-50%, -50%) scale(calc(var(--s, 1) * 0.9));
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(var(--s, 1));
+  }
+}
+.rush-pop {
+  animation: rush-pop 0.7s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+
+@keyframes rush-jostle {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -0.35cqh;
+  }
+}
+.rush-jostle {
+  animation: rush-jostle var(--j, 1.6s) ease-in-out infinite;
+}
+
+@keyframes rush-caption {
+  0% {
+    transform: scale(0.4) rotate(-6deg);
+    opacity: 0;
+  }
+  12% {
+    transform: scale(1.12) rotate(2deg);
+    opacity: 1;
+  }
+  20% {
+    transform: scale(1) rotate(-1deg);
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(-1deg) translateY(-2cqh);
+    opacity: 0;
+  }
+}
+.rush-caption {
+  animation: rush-caption var(--d, 2.8s) ease-out both;
+}
+
+@keyframes rush-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+}
+.rush-pulse {
+  animation: rush-pulse 0.7s ease-in-out infinite;
+}
+
+@keyframes rush-swing {
+  0% {
+    transform: translate(-50%, -20%) rotate(-14deg);
+  }
+  100% {
+    transform: translate(-50%, -20%) rotate(8deg);
+  }
+}
+.rush-swing {
+  transform-origin: 0% 0%;
+  animation: rush-swing 0.9s ease-in-out infinite alternate;
+}
+
+@keyframes rush-fall {
+  0% {
+    transform: translate(-50%, -20%) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(10%, 120%) rotate(110deg);
+    opacity: 0;
+  }
+}
+.rush-fall {
+  animation: rush-fall 1.6s cubic-bezier(0.5, 0, 1, 0.6) forwards;
+}
+
+@keyframes rush-shake {
+  0%,
+  100% {
+    translate: 0 0;
+    rotate: 0deg;
+  }
+  25% {
+    translate: -0.3cqh 0.2cqh;
+    rotate: -0.25deg;
+  }
+  50% {
+    translate: 0.3cqh -0.2cqh;
+  }
+  75% {
+    translate: -0.2cqh -0.3cqh;
+    rotate: 0.25deg;
+  }
+}
+.rush-shake {
+  animation: rush-shake 0.22s linear infinite;
+}
+
+@keyframes rush-leave {
+  0% {
+    transform: translateX(0);
+  }
+  10% {
+    transform: translateX(1%);
+  }
+  100% {
+    transform: translateX(-125%);
+  }
+}
+.rush-leave {
+  animation: rush-leave 5.5s cubic-bezier(0.55, 0, 0.85, 0.45) forwards;
+}
+
+@keyframes rush-arrive {
+  0% {
+    transform: translateX(125%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+.rush-arrive {
+  animation: rush-arrive 3s cubic-bezier(0.2, 0.6, 0.35, 1) both;
+}
+
+@keyframes rush-flyoff {
+  0% {
+    transform: translate(-50%, -50%) scale(var(--s, 1));
+  }
+  25% {
+    transform: translate(-50%, -260%) scale(var(--s, 1));
+  }
+  100% {
+    transform: translate(400%, -900%) rotate(900deg) scale(0.8);
+    opacity: 0.9;
+  }
+}
+.rush-flyoff {
+  animation: rush-flyoff 2.6s cubic-bezier(0.3, 0.1, 0.6, 1) forwards;
+}
+
+@keyframes rush-door-left {
+  0% {
+    transform: translateX(-102%);
+  }
+  35% {
+    transform: translateX(-12%);
+  }
+  45% {
+    transform: translateX(-38%);
+  }
+  55% {
+    transform: translateX(-16%);
+  }
+  100% {
+    transform: translateX(-102%);
+  }
+}
+@keyframes rush-door-right {
+  0% {
+    transform: translateX(102%);
+  }
+  35% {
+    transform: translateX(12%);
+  }
+  45% {
+    transform: translateX(38%);
+  }
+  55% {
+    transform: translateX(16%);
+  }
+  100% {
+    transform: translateX(102%);
+  }
+}
+.rush-door-left {
+  animation: rush-door-left 1.5s ease-in-out infinite;
+}
+.rush-door-right {
+  animation: rush-door-right 1.5s ease-in-out infinite;
+}
+
+@keyframes rush-stuck {
+  0%,
+  30%,
+  100% {
+    transform: translate(-50%, -50%) scale(0.85) rotate(-6deg);
+  }
+  38% {
+    transform: translate(-50%, -50%) scale(1.15) rotate(4deg);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1) rotate(-3deg);
+  }
+}
+.rush-stuck {
+  animation: rush-stuck 1.5s ease-in-out infinite;
+}
+
+@keyframes rush-walk {
+  0% {
+    transform: translateX(-30cqh);
+  }
+  100% {
+    transform: translateX(210cqh);
+  }
+}
+@keyframes rush-walk-back {
+  0% {
+    transform: translateX(210cqh);
+  }
+  100% {
+    transform: translateX(-30cqh);
+  }
+}
+@keyframes rush-step {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -0.8cqh;
+  }
+}
+.rush-step {
+  animation: rush-step 0.45s ease-in-out infinite;
+}
+
+@keyframes rush-chappal {
+  0% {
+    transform: translate(-10cqh, 30cqh) rotate(0deg);
+  }
+  50% {
+    transform: translate(85cqh, -6cqh) rotate(720deg);
+  }
+  100% {
+    transform: translate(190cqh, 28cqh) rotate(1440deg);
+  }
+}
+.rush-chappal {
+  animation: rush-chappal 3.2s linear forwards;
+}
+
+@keyframes rush-ticker {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+.rush-ticker {
+  animation: rush-ticker 28s linear infinite;
+}
+
+@keyframes rush-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0.25;
+  }
+}
+.rush-blink {
+  animation: rush-blink 0.8s steps(1) infinite;
+}
+
+@keyframes rush-flash-red {
+  0%,
+  49% {
+    color: #ff3b30;
+    text-shadow: 0 0 1.2cqh #ff3b30;
+  }
+  50%,
+  100% {
+    color: #ffb000;
+    text-shadow: 0 0 1cqh #ffb000;
+  }
+}
+.rush-flash-red {
+  animation: rush-flash-red 0.6s steps(1) infinite;
+}
+
+@keyframes rush-burst {
+  0% {
+    transform: scale(0) rotate(0deg);
+    opacity: 1;
+  }
+  60% {
+    transform: scale(1.1) rotate(20deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.3) rotate(30deg);
+    opacity: 0;
+  }
+}
+.rush-burst {
+  animation: rush-burst 1.4s ease-out forwards;
+}
+
+@keyframes rush-drop-in {
+  0% {
+    transform: translateY(-120%) rotate(-4deg);
+  }
+  12% {
+    transform: translateY(0) rotate(2deg);
+  }
+  18% {
+    transform: translateY(0) rotate(-1deg);
+  }
+  88% {
+    transform: translateY(0) rotate(-1deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-120%);
+    opacity: 0;
+  }
+}
+.rush-drop-in {
+  animation: rush-drop-in 9s ease-out forwards;
+}
+
+@keyframes rush-confetti {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--dx), var(--dy)) rotate(var(--r));
+    opacity: 0;
+  }
+}
+.rush-confetti {
+  animation: rush-confetti 1.6s cubic-bezier(0.2, 0.8, 0.4, 1) forwards;
+}
+
+@keyframes rush-press {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(6px);
+  }
+}
