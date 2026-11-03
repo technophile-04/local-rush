@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { countdown, crowdLevel, hasDeparted, rushErrorText } from "../rush";
-import { AddressInput } from "@scaffold-ui/components";
+import { Address, AddressInput } from "@scaffold-ui/components";
+import { isAddress } from "viem";
+import { base } from "viem/chains";
 import type { LoginMethod, RushActions, RushSession, Ticket, TrainView } from "~~/types/rush";
 
 export const MiniBoard = ({ train, now }: { train: TrainView | null; now: number }) => {
@@ -49,9 +51,13 @@ export const LoginPanel = ({ session }: { session: RushSession }) => {
   if (session.status === "ready") {
     return (
       <div className="flex items-center justify-between rounded-xl bg-black/30 px-4 py-2 text-sm font-bold text-white">
-        <span>
+        <span className="flex min-w-0 items-center gap-2">
           ✓ {session.method ? METHOD_NAMES[session.method] : "Logged in"}
-          {session.address && <span className="ml-2 font-mono text-white/60">{session.address.slice(0, 6)}…</span>}
+          {session.address && isAddress(session.address) && (
+            <span className="rush-sui rush-sui-chip">
+              <Address address={session.address} chain={base} size="sm" onlyEnsOrAddress />
+            </span>
+          )}
         </span>
         <button className="btn btn-ghost btn-xs text-white/80" onClick={session.logout}>
           logout
@@ -120,6 +126,8 @@ export const Confetti = () => {
 const TicketCard = ({ ticket, actions }: { ticket: Ticket; actions: RushActions }) => {
   const [open, setOpen] = useState(false);
   const [to, setTo] = useState("");
+  // Only known in this session: tickets don't record who they were sent to.
+  const [sentTo, setSentTo] = useState<string>();
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string>();
   return (
@@ -146,7 +154,19 @@ const TicketCard = ({ ticket, actions }: { ticket: Ticket; actions: RushActions 
       )}
       <div className="px-3 py-2">
         {!ticket.held ? (
-          <div className="font-display text-lg font-extrabold text-green-700">Sent ✓</div>
+          <div className="flex flex-wrap items-center gap-x-2 font-display text-lg font-extrabold text-green-700">
+            {sentTo && isAddress(sentTo) ? (
+              <>
+                Sent to
+                <span className="rush-sui rush-sui-ticket">
+                  <Address address={sentTo} chain={base} size="sm" onlyEnsOrAddress />
+                </span>
+                ✓
+              </>
+            ) : (
+              "Sent ✓"
+            )}
+          </div>
         ) : !open ? (
           <button
             className="btn btn-sm btn-outline border-2 border-[#1a0f0a] text-[#1a0f0a]"
@@ -156,16 +176,20 @@ const TicketCard = ({ ticket, actions }: { ticket: Ticket; actions: RushActions 
           </button>
         ) : (
           <div className="flex flex-col gap-2">
-            <AddressInput value={to} onChange={setTo} placeholder="0x… or name.eth" disabled={sending} />
+            <div className="rush-sui rush-sui-ticket">
+              <AddressInput value={to} onChange={setTo} placeholder="ENS name or 0x address" disabled={sending} />
+            </div>
             <div className="flex gap-2">
               <button
                 className="btn btn-sm flex-1 border-2 border-[#1a0f0a] bg-[#7a1f2b] text-white hover:bg-[#93283a]"
-                disabled={!to || sending}
+                // AddressInput reports the typed ENS name first and the resolved 0x address after lookup.
+                disabled={!isAddress(to) || sending}
                 onClick={async () => {
                   setSending(true);
                   setError(undefined);
                   try {
                     await actions.sendTicket(ticket.tokenId, to);
+                    setSentTo(to);
                     setOpen(false);
                   } catch (e) {
                     setError(rushErrorText(e, "Couldn't send, try again"));

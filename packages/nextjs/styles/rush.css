@@ -377,3 +377,48 @@
     transform: translateY(6px);
   }
 }
+
+/* scaffold-ui Address / AddressInput on the phone, recoloured to the game's palette.
+   Scoped to .rush-sui wrappers so /debug keeps stock SE-2 styling. Every --color-sui-* the
+   components read is set directly: the library derives some on :root, so overriding a base
+   colour here would not reach them. */
+.rush-sui {
+  --font-sans: var(--font-display);
+}
+.rush-sui a {
+  text-decoration: none;
+}
+.rush-sui a:hover {
+  text-decoration: underline;
+}
+
+/* On the dark brown logged-in chip. */
+.rush-sui-chip {
+  --color-sui-primary-content: #ffd200;
+  --color-sui-base-content: #ffffff;
+  --color-sui-skeleton-base: rgb(255 255 255 / 0.15);
+  --color-sui-skeleton-highlight: rgb(255 255 255 / 0.3);
+}
+
+/* On the cream ticket card: ink text, maroon accents, white field with the card's ink border. */
+.rush-sui-ticket {
+  --color-sui-primary-content: #1a0f0a;
+  --color-sui-base-content: #1a0f0a;
+  --color-sui-accent: #7a1f2b;
+  --color-sui-error: #b91c1c;
+  --color-sui-input-background: #ffffff;
+  --color-sui-input-text: #1a0f0a;
+  --color-sui-input-border: #1a0f0a;
+  --color-sui-input-border-disabled: rgb(26 15 10 / 0.4);
+  --color-sui-input-border-error: #b91c1c;
+  --color-sui-skeleton-base: #eadfb8;
+  --color-sui-skeleton-highlight: #fdf3d0;
+}
+.rush-sui-ticket input {
+  font-weight: 700;
+}
+/* The resolved ENS name sits on the ink border colour, so it needs the yellow, not the maroon accent. */
+.rush-sui-ticket .text-sui-accent {
+  color: #ffd200;
+  font-weight: 800;
+}
