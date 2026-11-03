@@ -108,7 +108,7 @@ export const CrowdMeter = ({ riders, capacity, virarFast }: MeterProps) => {
         </span>
       </div>
       <div
-        className="rounded-[0.8cqh] border-[0.4cqh] border-[#1a0f0a] px-[1.4cqh] font-display text-[5cqh] font-extrabold leading-[1.2] text-[#1a0f0a]"
+        className="rounded-[0.8cqh] border-[0.4cqh] border-[#1d1f23] px-[1.4cqh] font-display text-[5cqh] font-extrabold leading-[1.2] text-[#1d1f23]"
         style={{ background: shown.color }}
       >
         {virarFast ? "VIRAR FAST: Angry!" : shown.label}
@@ -119,12 +119,12 @@ export const CrowdMeter = ({ riders, capacity, virarFast }: MeterProps) => {
             key={s.label}
             className={`flex h-[6.2cqh] items-center justify-center rounded-[0.6cqh] border-[0.35cqh] px-[0.4cqh] text-center font-display text-[2.5cqh] font-extrabold leading-[1.05] ${
               i === shown.index
-                ? "border-white text-[#1a0f0a]"
+                ? "border-white text-[#1d1f23]"
                 : i < shown.index
-                  ? "border-[#1a0f0a] text-[#1a0f0a]"
-                  : "border-[#1a0f0a] text-white/70"
+                  ? "border-[#1d1f23] text-[#1d1f23]"
+                  : "border-[#1d1f23] text-white/70"
             }`}
-            style={{ background: i <= shown.index ? s.color : "rgba(0,0,0,0.35)" }}
+            style={{ background: i <= shown.index ? s.color : "#26292e" }}
           >
             {s.label}
           </div>
@@ -143,7 +143,10 @@ export const StatsStrip = ({ stats }: { stats: RushStats }) => (
         ["People boarded", stats.ridersTotal],
         ["Teamwork pushes", stats.teamworkPushes],
       ].map(([label, value]) => (
-        <div key={label} className="rounded-[0.8cqh] bg-black/35 px-[0.6cqh] py-[0.8cqh]">
+        <div
+          key={label}
+          className="rounded-[0.8cqh] border-[0.3cqh] border-[#3a3d42] bg-[#26292e] px-[0.6cqh] py-[0.8cqh]"
+        >
           <div className="text-[5.4cqh] text-[#ffd200]">{value}</div>
           <div className="mt-[0.4cqh] text-[2.5cqh] text-white/90">{label}</div>
         </div>

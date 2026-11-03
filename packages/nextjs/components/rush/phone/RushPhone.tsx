@@ -109,13 +109,13 @@ export const RushPhone = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#2b211c] bg-[radial-gradient(ellipse_at_top,#4a382e,transparent_60%)] font-display text-white">
+    <div className="min-h-screen bg-[#1d1f23] bg-[radial-gradient(ellipse_at_top,#31353b,transparent_60%)] font-display text-white">
       <div className="mx-auto flex max-w-md flex-col gap-4 px-4 pb-10 pt-4">
         <MiniBoard train={train} now={now} />
         <PhoneTrain train={train} now={now} me={me} pushing={state.kind === "pushing"} kick={kick} />
 
         <div className="flex items-center gap-3">
-          <div className="rounded-md border-4 border-[#1a0f0a] bg-[#ffd200] px-3 py-0.5 text-center font-extrabold leading-tight text-[#111]">
+          <div className="rounded-md border-4 border-[#1d1f23] bg-[#ffd200] px-3 py-0.5 text-center font-extrabold leading-tight text-[#111]">
             <div className="text-sm">डेवकॉन</div>
             <div className="text-lg tracking-widest">DEVCON</div>
           </div>
@@ -128,7 +128,7 @@ export const RushPhone = () => {
         <label className="flex flex-col gap-1">
           <span className="text-sm font-bold text-white/80">Your name (shown on the big screen)</span>
           <input
-            className="input input-lg w-full border-4 border-[#1a0f0a] bg-white font-display text-2xl font-extrabold text-[#1a0f0a]"
+            className="input input-lg w-full border-4 border-[#1d1f23] bg-white font-display text-2xl font-extrabold text-[#1d1f23]"
             value={name}
             maxLength={20}
             placeholder="e.g. Bunty"
@@ -171,7 +171,7 @@ export const RushPhone = () => {
 const StatusCard = ({ state, now, onboard }: { state: PushState; now: number; onboard: boolean }) => {
   if (onboard) {
     return (
-      <div className="rounded-2xl border-4 border-[#1a0f0a] bg-[#fdf3d0] p-4 text-center text-[#1a0f0a]">
+      <div className="rounded-2xl border-4 border-[#1d1f23] bg-[#f3f1ee] p-4 text-center text-[#1d1f23]">
         <div className="text-2xl font-extrabold">You&apos;re on this train.</div>
         <div className="font-bold">Wait for the next one</div>
       </div>
@@ -180,7 +180,7 @@ const StatusCard = ({ state, now, onboard }: { state: PushState; now: number; on
   switch (state.kind) {
     case "boarded":
       return (
-        <div className="rounded-2xl border-4 border-[#1a0f0a] bg-[#22c55e] p-4 text-center text-[#1a0f0a]">
+        <div className="rounded-2xl border-4 border-[#1d1f23] bg-[#22c55e] p-4 text-center text-[#1d1f23]">
           <div className="text-4xl font-extrabold">Boarded!</div>
           <div className="text-xl font-extrabold">
             Seat {state.seat} · Ticket #{String(state.tokenId)}
@@ -191,7 +191,7 @@ const StatusCard = ({ state, now, onboard }: { state: PushState; now: number; on
       );
     case "rode":
       return (
-        <div className="rounded-2xl border-4 border-[#1a0f0a] bg-[#22c55e] p-4 text-center text-[#1a0f0a]">
+        <div className="rounded-2xl border-4 border-[#1d1f23] bg-[#22c55e] p-4 text-center text-[#1d1f23]">
           <div className="text-4xl font-extrabold">Boarded!</div>
           <div className="text-xl font-extrabold">
             Seat {state.seat} · Ticket #{String(state.tokenId)}
@@ -204,7 +204,7 @@ const StatusCard = ({ state, now, onboard }: { state: PushState; now: number; on
       );
     case "hanging":
       return (
-        <div className="rush-pulse rounded-2xl border-4 border-[#1a0f0a] bg-[#ef4444] p-4 text-center">
+        <div className="rush-pulse rounded-2xl border-4 border-[#1d1f23] bg-[#ef4444] p-4 text-center">
           <div className="text-2xl font-extrabold leading-tight">You&apos;re hanging at the door.</div>
           <div className="text-xl font-extrabold">
             One more push in <span className="text-[#ffd200]">{Math.max(0, Math.ceil(state.until - now))}s</span> gets
@@ -215,13 +215,13 @@ const StatusCard = ({ state, now, onboard }: { state: PushState; now: number; on
       );
     case "error":
       return (
-        <div className="rounded-2xl border-4 border-[#1a0f0a] bg-[#ffb4a8] p-4 text-center text-xl font-extrabold text-[#1a0f0a]">
+        <div className="rounded-2xl border-4 border-[#1d1f23] bg-[#ffb4a8] p-4 text-center text-xl font-extrabold text-[#1d1f23]">
           {state.message}
         </div>
       );
     case "idle":
       return state.note ? (
-        <div className="rounded-2xl border-4 border-[#1a0f0a] bg-black/30 p-3 text-center text-lg font-extrabold">
+        <div className="rounded-2xl border-4 border-[#1d1f23] bg-black/30 p-3 text-center text-lg font-extrabold">
           {state.note}
         </div>
       ) : null;

@@ -18,7 +18,7 @@ const CAPTION_MS = 2800;
 const captionSize = (text: string) => Math.min(5.8, 200 / text.length);
 // Dark plate so captions read from the back of the room against the peach wall.
 const PLATE =
-  "rush-caption whitespace-nowrap rounded-[1.4cqh] border-[0.5cqh] bg-[#1a0f0a]/90 px-[2.4cqh] py-[0.3cqh] text-center font-extrabold leading-[1.2] shadow-[0_0.8cqh_0_rgba(0,0,0,0.45)]";
+  "rush-caption whitespace-nowrap rounded-[1.4cqh] border-[0.5cqh] bg-[#1d1f23]/90 px-[2.4cqh] py-[0.3cqh] text-center font-extrabold leading-[1.2] shadow-[0_0.8cqh_0_rgba(0,0,0,0.45)]";
 
 type Stage = { kind: "live" } | { kind: "leaving"; snapshot: TrainView } | { kind: "arriving" };
 type Caption = { id: number; text: string; teamwork: boolean; tone: "board" | "fall" };
@@ -166,7 +166,7 @@ export const RushScreen = () => {
       : null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center overflow-hidden bg-[#1a120e]">
+    <div className="fixed inset-0 flex items-center justify-center overflow-hidden bg-[#1d1f23]">
       <div
         className="rush-stage relative overflow-hidden font-display text-white select-none"
         style={{ width: "min(100vw, 177.78vh)", height: "min(100vh, 56.25vw)" }}
@@ -182,9 +182,9 @@ export const RushScreen = () => {
             style={{ left: `${x}cqh` }}
           />
         ))}
-        <div className="absolute inset-x-0 top-[66cqh] h-[6cqh] bg-[#3a3330]" />
-        <div className="absolute inset-x-0 top-[71.5cqh] h-[3cqh] border-y-[0.3cqh] border-[#1a0f0a] bg-[#ffd200] bg-[radial-gradient(circle,#c79f00_25%,transparent_27%)] bg-[length:2cqh_2cqh]" />
-        <div className="absolute inset-x-0 top-[74.5cqh] bottom-0 bg-gradient-to-b from-[#6b625b] to-[#4c4540]" />
+        <div className="absolute inset-x-0 top-[66cqh] h-[6cqh] bg-[#3a3d42]" />
+        <div className="absolute inset-x-0 top-[71.5cqh] h-[3cqh] border-y-[0.3cqh] border-[#1d1f23] bg-[#ffd200] bg-[radial-gradient(circle,#c79f00_25%,transparent_27%)] bg-[length:2cqh_2cqh]" />
+        <div className="absolute inset-x-0 top-[74.5cqh] bottom-0 bg-gradient-to-b from-[#31353b] to-[#26292e]" />
 
         {/* 1. indicator board, 2. station boards */}
         <div className="absolute left-[1.5cqh] top-[1cqh] h-[16.5cqh] w-[110cqh]">
@@ -202,7 +202,7 @@ export const RushScreen = () => {
               <StationBoard devanagari="माहीम" name="MAHIM" small />
             </div>
           ) : (
-            <div className="-rotate-3 rounded-[0.4cqh] border-[0.4cqh] border-[#1a0f0a] bg-[#7c3aed] px-[1.6cqh] py-[0.6cqh] text-center font-display font-extrabold leading-none text-white shadow-[0_0.8cqh_1.5cqh_rgba(0,0,0,0.4)]">
+            <div className="-rotate-3 rounded-[0.4cqh] border-[0.4cqh] border-[#1d1f23] bg-[#7c3aed] px-[1.6cqh] py-[0.6cqh] text-center font-display font-extrabold leading-none text-white shadow-[0_0.8cqh_1.5cqh_rgba(0,0,0,0.4)]">
               <div className="text-[4.4cqh]">DEVCON 8</div>
               <div className="text-[2.6cqh] tracking-[0.3em] text-[#ffd200]">MUMBAI</div>
             </div>
@@ -233,14 +233,14 @@ export const RushScreen = () => {
         {/* headline band (18.5–27cqh): door hanger banner > Mahim > captions. Cameos stay out of it. */}
         <div className="pointer-events-none absolute left-[30cqh] right-[2cqh] top-[18.5cqh] z-40 flex justify-center">
           {activeHanger && !leaving ? (
-            <div className="rush-pulse flex items-center gap-[2cqh] rounded-[1.4cqh] border-[0.6cqh] border-[#1a0f0a] bg-[#ef4444] px-[2.4cqh] py-[0.6cqh] shadow-[0_0.8cqh_0_#1a0f0a]">
+            <div className="rush-pulse flex items-center gap-[2cqh] rounded-[1.4cqh] border-[0.6cqh] border-[#1d1f23] bg-[#ef4444] px-[2.4cqh] py-[0.6cqh] shadow-[0_0.8cqh_0_#1d1f23]">
               <div className="flex flex-col leading-none">
                 <span className="text-[7cqh] font-extrabold">TEAMWORK PUSH needed!</span>
                 <span className="mt-[0.4cqh] text-[3.4cqh] font-extrabold text-[#ffd200]">
                   {activeHanger.name} is hanging at the door. One more push boards both
                 </span>
               </div>
-              <div className="flex h-[10cqh] w-[10cqh] shrink-0 items-center justify-center rounded-full border-[0.6cqh] border-[#1a0f0a] bg-[#ffd200] text-[6.4cqh] font-extrabold text-[#1a0f0a]">
+              <div className="flex h-[10cqh] w-[10cqh] shrink-0 items-center justify-center rounded-full border-[0.6cqh] border-[#1d1f23] bg-[#ffd200] text-[6.4cqh] font-extrabold text-[#1d1f23]">
                 {Math.max(0, Math.ceil(activeHanger.until - now))}
               </div>
             </div>
@@ -299,7 +299,7 @@ export const RushScreen = () => {
         {/* 11. sound */}
         <button
           onClick={sound.enable}
-          className={`absolute left-[1.5cqh] top-[71.7cqh] z-40 rounded-full border-[0.3cqh] border-[#1a0f0a] px-[1.2cqh] font-display text-[2cqh] font-extrabold leading-[1.3] text-[#1a0f0a] ${
+          className={`absolute left-[1.5cqh] top-[71.7cqh] z-40 rounded-full border-[0.3cqh] border-[#1d1f23] px-[1.2cqh] font-display text-[2cqh] font-extrabold leading-[1.3] text-[#1d1f23] ${
             sound.enabled ? "bg-white/70" : "rush-pulse bg-white"
           }`}
         >

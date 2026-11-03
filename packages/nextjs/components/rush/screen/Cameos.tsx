@@ -12,7 +12,7 @@ const CHATTER = ["Aage chalo!", "Move inside, there's space!", "Thoda adjust kar
 
 const Bubble = ({ children, className = "" }: { children: ReactNode; className?: string }) => (
   <div
-    className={`relative whitespace-nowrap rounded-[1.4cqh] border-[0.4cqh] border-[#1a0f0a] bg-white px-[1.4cqh] py-[0.3cqh] font-display text-[3cqh] font-extrabold leading-tight text-[#1a0f0a] shadow-[0_0.5cqh_0_#1a0f0a] ${className}`}
+    className={`relative whitespace-nowrap rounded-[1.4cqh] border-[0.4cqh] border-[#1d1f23] bg-white px-[1.4cqh] py-[0.3cqh] font-display text-[3cqh] font-extrabold leading-tight text-[#1d1f23] shadow-[0_0.5cqh_0_#1d1f23] ${className}`}
   >
     {children}
   </div>
@@ -22,9 +22,9 @@ const Walker = ({ body, hat, children }: { body: string; hat?: ReactNode; childr
   <div className="flex items-end gap-[1cqh]">
     <div className="rush-step flex origin-bottom scale-[0.85] flex-col items-center">
       {hat}
-      <div className="h-[4.4cqh] w-[4.4cqh] rounded-full border-[0.35cqh] border-[#1a0f0a] bg-[#a0663a]" />
+      <div className="h-[4.4cqh] w-[4.4cqh] rounded-full border-[0.35cqh] border-[#1d1f23] bg-[#a0663a]" />
       <div
-        className="-mt-[0.4cqh] h-[5.4cqh] w-[5.6cqh] rounded-t-[2cqh] border-[0.35cqh] border-[#1a0f0a]"
+        className="-mt-[0.4cqh] h-[5.4cqh] w-[5.6cqh] rounded-t-[2cqh] border-[0.35cqh] border-[#1d1f23]"
         style={{ background: body }}
       />
     </div>
@@ -91,7 +91,7 @@ export const Cameos = ({ paused, quiet, chatterAnchors }: CameosProps) => {
           <Walker
             body="#16a34a"
             hat={
-              <div className="mb-[-0.6cqh] h-[2cqh] w-[8cqh] rounded-t-full border-[0.35cqh] border-[#1a0f0a] bg-[#b45309]" />
+              <div className="mb-[-0.6cqh] h-[2cqh] w-[8cqh] rounded-t-full border-[0.35cqh] border-[#1d1f23] bg-[#b45309]" />
             }
           >
             <Bubble>Chikki! Vada pav! Hairclip, earring!</Bubble>
@@ -122,14 +122,14 @@ export const Cameos = ({ paused, quiet, chatterAnchors }: CameosProps) => {
       )}
       {gag?.kind === "chappal" && (
         <div key={gag.id} className="rush-chappal absolute left-0 top-[20cqh]">
-          <div className="h-[2.6cqh] w-[7cqh] rounded-full border-[0.35cqh] border-[#1a0f0a] bg-[#2563eb]">
-            <div className="ml-[2cqh] mt-[-0.8cqh] h-[1.6cqh] w-[2.6cqh] rounded-t-full border-[0.35cqh] border-b-0 border-[#1a0f0a]" />
+          <div className="h-[2.6cqh] w-[7cqh] rounded-full border-[0.35cqh] border-[#1d1f23] bg-[#2563eb]">
+            <div className="ml-[2cqh] mt-[-0.8cqh] h-[1.6cqh] w-[2.6cqh] rounded-t-full border-[0.35cqh] border-b-0 border-[#1d1f23]" />
           </div>
         </div>
       )}
       {gag?.kind === "late" && !quiet && (
         <div key={gag.id} className="rush-drop-in absolute right-[2cqh] top-[18.5cqh] w-[40cqh]">
-          <div className="rounded-[0.6cqh] border-[0.5cqh] border-[#1a0f0a] bg-white px-[1.4cqh] py-[0.8cqh] font-display text-[2.6cqh] font-extrabold leading-tight text-[#b91c1c] shadow-[0_1cqh_2cqh_rgba(0,0,0,0.4)]">
+          <div className="rounded-[0.6cqh] border-[0.5cqh] border-[#1d1f23] bg-white px-[1.4cqh] py-[0.8cqh] font-display text-[2.6cqh] font-extrabold leading-tight text-[#b91c1c] shadow-[0_1cqh_2cqh_rgba(0,0,0,0.4)]">
             Due to technical reasons trains are running 10–15 minutes late. Inconvenience is regretted.
           </div>
         </div>

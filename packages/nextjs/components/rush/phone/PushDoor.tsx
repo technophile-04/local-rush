@@ -117,13 +117,7 @@ export const PushDoor = ({ look, effort, sign, onTap, onPush }: PushDoorProps) =
   const shown = look === "pushing" ? 1 : meter;
   const ladder =
     // The chain hasn't answered yet: you might board or end up hanging, so don't promise "Chadh gaya!".
-    look === "pushing"
-      ? "Pushing…"
-      : canPush && meter > 0
-        ? meter < 0.5
-          ? "Aage chalo!"
-          : "Thoda adjust karo"
-        : null;
+    look === "pushing" ? "Pushing…" : canPush && meter > 0 ? (meter < 0.5 ? "Aage chalo!" : "Thoda adjust karo") : null;
 
   return (
     <div className="flex flex-col items-center">
@@ -150,7 +144,7 @@ export const PushDoor = ({ look, effort, sign, onTap, onPush }: PushDoorProps) =
         <div key={kicks} className={`absolute inset-0 ${kicks > 0 && canPush ? "rush-door-kick" : ""}`}>
           {/* today's WR local: off-white body, magenta stripe and door panels, light grey frames */}
           <div
-            className={`absolute inset-0 overflow-hidden rounded-t-[2.2rem] rounded-b-lg border-[5px] border-[#1a0f0a] bg-[#f3f1ee] shadow-[0_12px_0_#1a0f0a]`}
+            className={`absolute inset-0 overflow-hidden rounded-t-[2.2rem] rounded-b-lg border-[5px] border-[#1d1f23] bg-[#f3f1ee] shadow-[0_12px_0_#1d1f23]`}
           >
             <div className={`absolute inset-x-0 top-0 h-[4.6rem] bg-[#f3f1ee]`}>
               <div className={`absolute inset-x-0 top-2 h-2 bg-[#a8175f]`} />
@@ -189,7 +183,7 @@ export const PushDoor = ({ look, effort, sign, onTap, onPush }: PushDoorProps) =
 
           {/* the doorway */}
           <div
-            className={`absolute inset-x-[1.6rem] top-[5.4rem] bottom-[2.1rem] overflow-hidden rounded-t-md border-[4px] border-[#1a0f0a] outline outline-[4px] outline-[#c9ccd0] bg-gradient-to-b from-[#120c0a] via-[#1f1512] to-[#2b1f1a]`}
+            className={`absolute inset-x-[1.6rem] top-[5.4rem] bottom-[2.1rem] overflow-hidden rounded-t-md border-[4px] border-[#1d1f23] outline outline-[4px] outline-[#c9ccd0] bg-gradient-to-b from-[#120c0a] via-[#1f1512] to-[#2b1f1a]`}
           >
             {/* ceiling light and the crowd inside */}
             <div className="absolute inset-x-6 top-1 h-1.5 rounded-full bg-[#fff7d6]/70 blur-[1px]" />
@@ -239,7 +233,7 @@ export const PushDoor = ({ look, effort, sign, onTap, onPush }: PushDoorProps) =
                 grabbing ? "rush-pole-flex" : kicks > 0 && canPush ? "rush-pole-kick" : ""
               }`}
             >
-              <div className="h-full w-full rounded-full border-2 border-[#1a0f0a] bg-[linear-gradient(to_right,#4b5563,#e5e7eb_35%,#ffffff_45%,#9ca3af_65%,#374151)]">
+              <div className="h-full w-full rounded-full border-2 border-[#1d1f23] bg-[linear-gradient(to_right,#4b5563,#e5e7eb_35%,#ffffff_45%,#9ca3af_65%,#374151)]">
                 {[18, 41, 63, 80].map(y => (
                   <span
                     key={y}
@@ -250,21 +244,21 @@ export const PushDoor = ({ look, effort, sign, onTap, onPush }: PushDoorProps) =
               </div>
               {/* your hand, when grabbing */}
               {grabbing && (
-                <div className="absolute left-1/2 top-[44%] h-6 w-8 -translate-x-1/2 rounded-lg border-2 border-[#1a0f0a] bg-[#c68642]" />
+                <div className="absolute left-1/2 top-[44%] h-6 w-8 -translate-x-1/2 rounded-lg border-2 border-[#1d1f23] bg-[#c68642]" />
               )}
             </div>
 
             {/* closed: magenta sliding door panels with tall narrow windows */}
             {look === "closed" &&
               ["left-0 border-r-2", "right-0 border-l-2"].map(side => (
-                <div key={side} className={`absolute inset-y-0 ${side} w-1/2 border-[#1a0f0a] bg-[#a8175f]`}>
+                <div key={side} className={`absolute inset-y-0 ${side} w-1/2 border-[#1d1f23] bg-[#a8175f]`}>
                   <div className="mx-auto mt-5 h-[58%] w-[28%] rounded-full border-[3px] border-[#c9ccd0] bg-[#1f2a33]" />
                 </div>
               ))}
           </div>
 
           {/* the push meter, on the footboard */}
-          <div className="absolute inset-x-[1.2rem] bottom-[0.55rem] h-6 overflow-hidden rounded-md border-[3px] border-[#1a0f0a] bg-[#3a3330]">
+          <div className="absolute inset-x-[1.2rem] bottom-[0.55rem] h-6 overflow-hidden rounded-md border-[3px] border-[#1d1f23] bg-[#3a3d42]">
             <div
               className="h-full bg-[#ffd200] bg-[repeating-linear-gradient(135deg,transparent_0_8px,rgb(0_0_0/0.18)_8px_14px)] transition-[width] duration-100 ease-out"
               style={{
@@ -277,7 +271,7 @@ export const PushDoor = ({ look, effort, sign, onTap, onPush }: PushDoorProps) =
           {ladder && (
             <div
               key={ladder}
-              className="rush-ladder pointer-events-none absolute inset-x-0 top-[6.2rem] z-10 text-center font-display text-3xl font-extrabold text-[#ffd200] [paint-order:stroke_fill] [-webkit-text-stroke:6px_#1a0f0a] [text-shadow:0_3px_0_#1a0f0a]"
+              className="rush-ladder pointer-events-none absolute inset-x-0 top-[6.2rem] z-10 text-center font-display text-3xl font-extrabold text-[#ffd200] [paint-order:stroke_fill] [-webkit-text-stroke:6px_#1d1f23] [text-shadow:0_3px_0_#1d1f23]"
             >
               {ladder}
             </div>
@@ -288,7 +282,7 @@ export const PushDoor = ({ look, effort, sign, onTap, onPush }: PushDoorProps) =
       {sign && (
         <div
           id="push-door-sign"
-          className="relative mt-5 rounded-md border-[3px] border-[#1a0f0a] bg-[#0f2a4a] px-5 py-1.5 text-center font-display text-base font-extrabold leading-tight text-white shadow-[0_4px_0_#1a0f0a]"
+          className="relative mt-5 rounded-md border-[3px] border-[#1d1f23] bg-[#0f2a4a] px-5 py-1.5 text-center font-display text-base font-extrabold leading-tight text-white shadow-[0_4px_0_#1d1f23]"
         >
           <span className="absolute left-1 top-1 h-1 w-1 rounded-full bg-white/60" />
           <span className="absolute right-1 top-1 h-1 w-1 rounded-full bg-white/60" />

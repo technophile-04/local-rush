@@ -23,14 +23,16 @@ export const MiniBoard = ({ train, now }: { train: TrainView | null; now: number
       <div
         className={`font-led text-[1.6rem] font-black leading-tight ${train.virarFast ? "rush-flash-red" : "text-[#ffb000]"}`}
       >
-        <LedText text={`Train #${String(train.trainId)} → ${train.virarFast ? "8.15 VIRAR FAST" : train.destination}`} />
+        <LedText
+          text={`Train #${String(train.trainId)} → ${train.virarFast ? "8.15 VIRAR FAST" : train.destination}`}
+        />
       </div>
       <div className="mt-1 flex items-center justify-between gap-2 font-led text-[1.4rem] font-black text-[#ffb000]">
         <span>
           <LedText text={time} /> · {train.riders.length}/{train.capacity}
         </span>
         <span
-          className="rounded-md px-2 font-display text-sm font-extrabold leading-6 text-[#1a0f0a]"
+          className="rounded-md px-2 font-display text-sm font-extrabold leading-6 text-[#1d1f23]"
           style={{ background: level.color }}
         >
           {level.phone}
@@ -52,7 +54,7 @@ export const LoginPanel = ({ session }: { session: RushSession }) => {
   const [error, setError] = useState<string>();
   if (session.status === "ready") {
     return (
-      <div className="rush-riding flex items-center gap-3 rounded-2xl border-2 border-[#ffd200]/30 bg-[#2a0d12]/80 px-3 py-2.5 text-white">
+      <div className="rush-riding flex items-center gap-3 rounded-2xl border-2 border-[#ffd200]/30 bg-[#85114b]/80 px-3 py-2.5 text-white">
         {session.address && isAddress(session.address) ? (
           <div className="rush-sui rush-sui-chip min-w-0 flex-1">
             <div className="rush-riding-label">Riding as</div>
@@ -77,7 +79,7 @@ export const LoginPanel = ({ session }: { session: RushSession }) => {
         <button
           key={method}
           disabled={connecting}
-          className="btn btn-lg h-auto min-h-16 flex-col items-start gap-0 border-4 border-[#1a0f0a] bg-[#ffd200] py-2 text-left text-[#1a0f0a] hover:bg-[#ffe14d] disabled:bg-[#ffd200]/60"
+          className="btn btn-lg h-auto min-h-16 flex-col items-start gap-0 border-4 border-[#1d1f23] bg-[#ffd200] py-2 text-left text-[#1d1f23] hover:bg-[#ffe14d] disabled:bg-[#ffd200]/60"
           onClick={async () => {
             setError(undefined);
             try {
@@ -143,7 +145,7 @@ const TicketCard = ({ ticket, actions }: { ticket: Ticket; actions: RushActions 
         <img
           src={ticket.image}
           alt={`Ticket #${ticket.tokenId}`}
-          className="w-full rounded-lg border-4 border-[#1a0f0a] shadow-[0_6px_0_#1a0f0a]"
+          className="w-full rounded-lg border-4 border-[#1d1f23] shadow-[0_6px_0_#1d1f23]"
         />
       ) : (
         <PaperTicket ticket={ticket} sent={!ticket.held} />
