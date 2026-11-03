@@ -172,9 +172,9 @@ export const RushScreen = () => {
         style={{ width: "min(100vw, 177.78vh)", height: "min(100vh, 56.25vw)" }}
       >
         {/* backdrop: platform roof, hazy far side, overhead wire, track, platform */}
-        <div className="absolute inset-x-0 top-0 h-[19cqh] bg-gradient-to-b from-[#2b211c] to-[#3d3029]" />
+        <div className="absolute inset-x-0 top-0 h-[19cqh] bg-gradient-to-b from-[#1d1f23] to-[#31353b]" />
         <div className="absolute inset-x-0 top-[19cqh] h-[50cqh] bg-gradient-to-b from-[#f3c58f] via-[#e8b07a] to-[#c98e5d]" />
-        <div className="absolute inset-x-0 top-[23.5cqh] h-[0.35cqh] bg-[#2b211c]" />
+        <div className="absolute inset-x-0 top-[23.5cqh] h-[0.35cqh] bg-[#1d1f23]" />
         {[30, 90, 150].map(x => (
           <div
             key={x}
