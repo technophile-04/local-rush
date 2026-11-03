@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { hasDeparted, rushErrorText, sameAddress, useNow } from "../rush";
 import { Confetti, LoginPanel, MiniBoard, MyTickets } from "./PhoneParts";
 import { PhoneTrain } from "./PhoneTrain";
+import { PushDoor } from "./PushDoor";
 import { useRush } from "~~/hooks/rush/useRush";
 
 const NAME_KEY = "rush-name";
@@ -21,7 +22,6 @@ export const RushPhone = () => {
   const now = useNow(500);
   const [name, setName] = useState("");
   const [state, setState] = useState<PushState>({ kind: "idle" });
-  const [pressed, setPressed] = useState(false);
 
   useEffect(() => setName(localStorage.getItem(NAME_KEY) ?? ""), []);
 
@@ -131,29 +131,11 @@ export const RushPhone = () => {
         <LoginPanel session={session} />
 
         <div className="relative flex flex-col items-center gap-3 py-2">
-          <button
-            disabled={!!blocked || busy}
-            onPointerDown={() => setPressed(true)}
-            onPointerUp={() => setPressed(false)}
-            onPointerLeave={() => setPressed(false)}
-            onClick={push}
-            className={`relative flex h-64 w-64 flex-col items-center justify-center rounded-full border-[6px] border-[#1a0f0a] font-display font-extrabold transition-transform duration-75 select-none ${
-              blocked || busy ? "bg-[#7a1f2b]/60 text-[#ffd200]/60" : "bg-[#7a1f2b] text-[#ffd200]"
-            } ${pressed && !blocked && !busy ? "translate-y-[10px] shadow-[0_4px_0_#1a0f0a]" : "shadow-[0_14px_0_#1a0f0a]"}`}
-          >
-            <span className="absolute inset-3 rounded-full border-4 border-dashed border-[#ffd200]/50" />
-            {state.kind === "pushing" ? (
-              <>
-                <span className="loading loading-dots loading-lg" />
-                <span className="text-3xl">Pushing…</span>
-              </>
-            ) : (
-              <>
-                <span className="text-6xl leading-none">PUSH</span>
-                {blocked && <span className="mt-2 px-6 text-center text-base text-white/90">{blocked}</span>}
-              </>
-            )}
-          </button>
+          <PushDoor
+            look={state.kind === "pushing" ? "pushing" : onboard || busy ? "crowded" : blocked ? "closed" : "open"}
+            sign={state.kind === "pushing" ? "Pushing…" : (blocked ?? "Grab the pole to push")}
+            onPush={push}
+          />
           {(state.kind === "boarded" || state.kind === "rode") && <Confetti key={String(state.tokenId)} />}
         </div>
 

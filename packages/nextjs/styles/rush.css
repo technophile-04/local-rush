@@ -446,3 +446,54 @@
     opacity: 1;
   }
 }
+
+/* Phone PUSH door (components/rush/phone/PushDoor.tsx) */
+@keyframes rush-pole-flex {
+  0%,
+  100% {
+    transform: skewX(0deg);
+  }
+  40% {
+    transform: skewX(-3.5deg) scaleY(0.985);
+  }
+  70% {
+    transform: skewX(2deg);
+  }
+}
+.rush-pole-flex {
+  animation: rush-pole-flex 0.35s ease-in-out infinite;
+}
+@keyframes rush-door-lurch {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  30% {
+    transform: translateY(6px) rotate(-0.8deg) scale(0.985);
+  }
+  65% {
+    transform: translateY(2px) rotate(0.6deg);
+  }
+}
+.rush-door-lurch {
+  animation: rush-door-lurch 0.35s ease-in-out infinite;
+}
+@keyframes rush-crowd-sway {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(4px);
+  }
+}
+.rush-crowd-sway {
+  animation: rush-crowd-sway 1.1s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .rush-pole-flex,
+  .rush-door-lurch,
+  .rush-crowd-sway {
+    animation: none;
+  }
+}
