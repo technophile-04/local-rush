@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { countdown, crowdLevel, hasDeparted, rushErrorText } from "../rush";
+import { LedText } from "../screen/Boards";
 import { PaperTicket } from "./PaperTicket";
 import { Address, AddressInput } from "@scaffold-ui/components";
 import { isAddress } from "viem";
@@ -22,11 +23,11 @@ export const MiniBoard = ({ train, now }: { train: TrainView | null; now: number
       <div
         className={`font-led text-[1.6rem] font-black leading-tight ${train.virarFast ? "rush-flash-red" : "text-[#ffb000]"}`}
       >
-        Train #{String(train.trainId)} → {train.virarFast ? "8.15 VIRAR FAST" : train.destination}
+        <LedText text={`Train #${String(train.trainId)} → ${train.virarFast ? "8.15 VIRAR FAST" : train.destination}`} />
       </div>
       <div className="mt-1 flex items-center justify-between gap-2 font-led text-[1.4rem] font-black text-[#ffb000]">
         <span>
-          {time} · {train.riders.length}/{train.capacity}
+          <LedText text={time} /> · {train.riders.length}/{train.capacity}
         </span>
         <span
           className="rounded-md px-2 font-display text-sm font-extrabold leading-6 text-[#1a0f0a]"

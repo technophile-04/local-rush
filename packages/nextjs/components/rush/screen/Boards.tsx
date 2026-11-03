@@ -7,7 +7,7 @@ const ANNOUNCEMENT =
 const COLS = "grid grid-cols-[17cqh_1fr_9cqh_11cqh_19cqh] items-baseline gap-x-[2cqh]";
 
 /** The LED font draws "." and ":" as a cross, so separators use the display font. */
-const LedText = ({ text }: { text: string }) => (
+export const LedText = ({ text }: { text: string }) => (
   <>
     {text.split(/([.:])/).map((part, i) =>
       part === "." || part === ":" ? (
