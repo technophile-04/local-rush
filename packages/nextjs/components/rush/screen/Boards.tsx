@@ -47,9 +47,9 @@ export const IndicatorBoard = ({ train, now, leaving, waiting }: IndicatorProps)
       </div>
       <div className="mt-[0.4cqh] overflow-hidden whitespace-nowrap border-t-[0.3cqh] border-[#3a2a00] pt-[0.2cqh] font-led text-[3cqh] leading-[1.15] font-black text-[#ffb000]">
         <div className="rush-ticker inline-block">
-          {waiting || !started ? "Pehla dhakka do! Scan karo, chadho! · " : ""}
+          {waiting || !started ? "Scan the QR and push to board · " : ""}
           {ANNOUNCEMENT}
-          {waiting || !started ? "Pehla dhakka do! Scan karo, chadho! · " : ""}
+          {waiting || !started ? "Scan the QR and push to board · " : ""}
           {ANNOUNCEMENT}
         </div>
       </div>
@@ -82,9 +82,8 @@ export const StationBoard = ({
 
 export const PlatformBoard = () => (
   <div className="flex flex-col items-center justify-center rounded-[0.6cqh] border-[0.6cqh] border-[#1a0f0a] bg-[#1e3a8a] px-[1.6cqh] py-[0.6cqh] font-display font-extrabold leading-none text-white shadow-[0_1cqh_2cqh_rgba(0,0,0,0.45)]">
-    <span className="text-[2.4cqh]">फलाट क्र.</span>
-    <span className="text-[9cqh] leading-[0.95]">8</span>
     <span className="text-[2.4cqh] tracking-wider">PLATFORM</span>
+    <span className="text-[10cqh] leading-[0.95]">8</span>
   </div>
 );
 
@@ -106,9 +105,9 @@ export const CrowdMeter = ({ riders, capacity, virarFast }: MeterProps) => {
         className="rounded-[0.8cqh] border-[0.4cqh] border-[#1a0f0a] px-[1.4cqh] font-display text-[5cqh] font-extrabold leading-[1.2] text-[#1a0f0a]"
         style={{ background: shown.color }}
       >
-        {virarFast ? "VIRAR FAST: Gussa!" : shown.label}
+        {virarFast ? "VIRAR FAST: Angry!" : shown.label}
       </div>
-      <div className="grid grid-cols-4 gap-[0.6cqh]">
+      <div className="grid grid-cols-[1.3fr_1fr_1fr_1fr] gap-[0.6cqh]">
         {CROWD_STOPS.map((s, i) => (
           <div
             key={s.label}
@@ -134,8 +133,8 @@ export const StatsStrip = ({ stats }: { stats: RushStats }) => (
   <div className="flex h-full flex-col justify-center gap-[1cqh]">
     <div className="grid grid-cols-3 gap-[1cqh] text-center font-display font-extrabold leading-none text-white">
       {[
-        ["Aaj ke trains", stats.trainsDeparted],
-        ["Log chadhe", stats.ridersTotal],
+        ["Trains today", stats.trainsDeparted],
+        ["People boarded", stats.ridersTotal],
         ["Teamwork pushes", stats.teamworkPushes],
       ].map(([label, value]) => (
         <div key={label} className="rounded-[0.8cqh] bg-black/35 px-[0.6cqh] py-[0.8cqh]">
@@ -145,12 +144,12 @@ export const StatsStrip = ({ stats }: { stats: RushStats }) => (
       ))}
     </div>
     <div className="flex flex-col gap-[0.3cqh] rounded-[0.6cqh] bg-black px-[1.2cqh] py-[0.6cqh] font-led text-[2.8cqh] font-black leading-[1.1] text-[#ffb000]">
-      {stats.recentTrains.length === 0 && <span>Abhi tak koi train nahi gayi</span>}
+      {stats.recentTrains.length === 0 && <span>No departures yet</span>}
       {stats.recentTrains.slice(0, 3).map(t => (
         <div key={String(t.trainId)} className={`flex justify-between ${t.virarFast ? "text-[#ff5a4f]" : ""}`}>
           <span>#{String(t.trainId)}</span>
           <span className="flex-1 px-[1.5cqh]">{t.virarFast ? "VIRAR FAST" : t.destination}</span>
-          <span>{t.riders} log · GONE</span>
+          <span>{t.riders} riders · GONE</span>
         </div>
       ))}
     </div>

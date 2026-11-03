@@ -32,7 +32,7 @@ export const RushPhone = () => {
     if (!train) return;
     if (state.kind === "hanging") {
       if (state.trainId !== train.trainId || departed) {
-        setState({ kind: "idle", note: "Gir gaya! Train chali gayi. Agli mein dhakka do" });
+        setState({ kind: "idle", note: "The train left without you. Push again for the next one" });
       } else if (myRider) {
         setState({
           kind: "boarded",
@@ -42,26 +42,26 @@ export const RushPhone = () => {
           teamwork: true,
         });
       } else if (now > state.until + 1) {
-        setState({ kind: "idle", note: "Gir gaya! Platform pe wapas. Phir se dhakka do" });
+        setState({ kind: "idle", note: "You fell off the door. Push again" });
       }
     }
     if (state.kind === "boarded" && (state.trainId !== train.trainId || departed)) {
-      setState({ kind: "idle", note: `Train #${state.trainId} chali gayi! Ticket neeche hai` });
+      setState({ kind: "idle", note: `Train #${state.trainId} departed. Your ticket is below` });
     }
   }, [train, now, departed, myRider, state]);
 
   const ready = session.status === "ready";
   const onboard = !!myRider && state.kind !== "boarded";
   const blocked = !name.trim()
-    ? "Pehle naam likho"
+    ? "Enter your name first"
     : !ready
-      ? "Pehle login karo"
+      ? "Log in first"
       : !train
-        ? "Train aa rahi hai…"
+        ? "Train arriving…"
         : onboard || state.kind === "boarded"
-          ? "Andar ho bhai. Agli train ka wait karo"
+          ? "You're on this train"
           : state.kind === "hanging"
-            ? "Ab kisi aur ka dhakka chahiye!"
+            ? "Waiting for one more push"
             : null;
   const busy = state.kind === "pushing" || state.kind === "hanging" || state.kind === "boarded";
 
@@ -93,12 +93,12 @@ export const RushPhone = () => {
           </div>
           <div className="text-lg font-extrabold leading-tight">
             Mumbai Local Rush
-            <div className="text-sm font-bold text-white/70">Platform 8 · naam likho, dhakka do!</div>
+            <div className="text-sm font-bold text-white/70">Platform 8 · type your name, then push</div>
           </div>
         </div>
 
         <label className="flex flex-col gap-1">
-          <span className="text-sm font-bold text-white/80">Tera naam (screen pe dikhega)</span>
+          <span className="text-sm font-bold text-white/80">Your name (shown on the big screen)</span>
           <input
             className="input input-lg w-full border-4 border-[#1a0f0a] bg-white font-display text-2xl font-extrabold text-[#1a0f0a]"
             value={name}
@@ -128,12 +128,11 @@ export const RushPhone = () => {
             {state.kind === "pushing" ? (
               <>
                 <span className="loading loading-dots loading-lg" />
-                <span className="text-3xl">Aage chalo…</span>
+                <span className="text-3xl">Pushing…</span>
               </>
             ) : (
               <>
-                <span className="text-5xl leading-none">DHAKKA!</span>
-                <span className="text-3xl leading-none">PUSH</span>
+                <span className="text-6xl leading-none">PUSH</span>
                 {blocked && <span className="mt-2 px-6 text-center text-base text-white/90">{blocked}</span>}
               </>
             )}
@@ -153,8 +152,8 @@ const StatusCard = ({ state, now, onboard }: { state: PushState; now: number; on
   if (onboard) {
     return (
       <div className="rounded-2xl border-4 border-[#1a0f0a] bg-[#fdf3d0] p-4 text-center text-[#1a0f0a]">
-        <div className="text-2xl font-extrabold">Andar ho bhai.</div>
-        <div className="font-bold">Agli train ka wait karo</div>
+        <div className="text-2xl font-extrabold">You&apos;re on this train.</div>
+        <div className="font-bold">Wait for the next one</div>
       </div>
     );
   }
@@ -162,22 +161,23 @@ const StatusCard = ({ state, now, onboard }: { state: PushState; now: number; on
     case "boarded":
       return (
         <div className="rounded-2xl border-4 border-[#1a0f0a] bg-[#22c55e] p-4 text-center text-[#1a0f0a]">
-          <div className="text-4xl font-extrabold">Chadh gaya!</div>
+          <div className="text-4xl font-extrabold">Boarded!</div>
           <div className="text-xl font-extrabold">
             Seat {state.seat} · Ticket #{String(state.tokenId)}
           </div>
-          {state.teamwork && <div className="font-bold">★ Teamwork push! Dost ne andar kheencha</div>}
-          <div className="mt-1 text-sm font-bold">Screen pe dekho, tu train mein hai</div>
+          {state.teamwork && <div className="font-bold">★ Teamwork push: someone pulled you in</div>}
+          <div className="mt-1 text-sm font-bold">Look for your name on the big screen</div>
         </div>
       );
     case "hanging":
       return (
         <div className="rush-pulse rounded-2xl border-4 border-[#1a0f0a] bg-[#ef4444] p-4 text-center">
-          <div className="text-2xl font-extrabold leading-tight">Tu door pe latak raha hai!</div>
+          <div className="text-2xl font-extrabold leading-tight">You&apos;re hanging at the door.</div>
           <div className="text-xl font-extrabold">
-            Ek aur push chahiye: <span className="text-[#ffd200]">{Math.max(0, Math.ceil(state.until - now))}s</span>
+            One more push in <span className="text-[#ffd200]">{Math.max(0, Math.ceil(state.until - now))}s</span> gets
+            you both in
           </div>
-          <div className="mt-1 font-bold">Room ko chillao: &ldquo;DHAKKA DO!&rdquo;</div>
+          <div className="mt-1 font-bold">Ask the room to push!</div>
         </div>
       );
     case "error":

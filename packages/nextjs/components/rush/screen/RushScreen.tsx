@@ -95,7 +95,7 @@ export const RushScreen = () => {
     const names = fresh.map(r => r.name).join(" & ");
     setCaption({
       id: Date.now(),
-      text: `${fresh.length > 1 ? "Chadh gaye!" : "Chadh gaya!"} — ${names}`,
+      text: `${teamwork ? "TEAMWORK PUSH" : "Chadh gaya!"} — ${names}`,
       teamwork,
       tone: "board",
     });
@@ -122,7 +122,12 @@ export const RushScreen = () => {
       train?.doorHanger && sameAddress(train.doorHanger.address, prev.address) && now > prev.until;
     if (!boarded && (sameTrainExpired || !train?.doorHanger)) {
       setFalling(prev);
-      setCaption({ id: Date.now(), text: `Gir gaya! Platform pe wapas — ${prev.name}`, teamwork: false, tone: "fall" });
+      setCaption({
+        id: Date.now(),
+        text: `${prev.name} fell off! Back to the platform`,
+        teamwork: false,
+        tone: "fall",
+      });
       setTimeout(() => setFalling(null), 1600);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -221,9 +226,9 @@ export const RushScreen = () => {
           {activeHanger && !leaving ? (
             <div className="rush-pulse flex items-center gap-[2cqh] rounded-[1.4cqh] border-[0.6cqh] border-[#1a0f0a] bg-[#ef4444] px-[2.4cqh] py-[0.6cqh] shadow-[0_0.8cqh_0_#1a0f0a]">
               <div className="flex flex-col leading-none">
-                <span className="text-[6.6cqh] font-extrabold">TEAMWORK PUSH chahiye!</span>
+                <span className="text-[7cqh] font-extrabold">TEAMWORK PUSH needed!</span>
                 <span className="mt-[0.4cqh] text-[3.4cqh] font-extrabold text-[#ffd200]">
-                  2 pull, 2 push! {activeHanger.name} door pe latak raha hai
+                  {activeHanger.name} is hanging at the door. One more push boards both
                 </span>
               </div>
               <div className="flex h-[10cqh] w-[10cqh] shrink-0 items-center justify-center rounded-full border-[0.6cqh] border-[#1a0f0a] bg-[#ffd200] text-[6.4cqh] font-extrabold text-[#1a0f0a]">
@@ -242,7 +247,7 @@ export const RushScreen = () => {
               className="rush-caption rush-stroke text-[8cqh] font-extrabold text-white"
               style={{ ["--d" as string]: "3s" }}
             >
-              PAAAM! Train chali!
+              PAAAM!
             </div>
           ) : (
             caption && (
@@ -253,7 +258,6 @@ export const RushScreen = () => {
                 <div
                   className={`rush-caption rush-stroke whitespace-nowrap text-[7.6cqh] font-extrabold ${caption.tone === "fall" ? "text-[#ff6b5e]" : "text-[#ffd200]"}`}
                 >
-                  {caption.teamwork && <span className="text-white">TEAMWORK PUSH! </span>}
                   {caption.text}
                 </div>
               </div>

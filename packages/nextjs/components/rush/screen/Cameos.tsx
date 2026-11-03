@@ -7,13 +7,7 @@ type Gag = "vendor" | "tc" | "chappal" | "late";
 const GAGS: Gag[] = ["vendor", "tc", "chappal", "late"];
 const GAG_MS: Record<Gag, number> = { vendor: 13000, tc: 12000, chappal: 3400, late: 9000 };
 
-const CHATTER = [
-  "Aage chalo!",
-  "Thoda adjust karo",
-  "Andar chalo, andar jagah hai!",
-  "Pudhil station Dadar",
-  "Bag aage lo!",
-];
+const CHATTER = ["Aage chalo!", "Move inside, there's space!", "Thoda adjust karo", "Bag in front, please"];
 
 const Bubble = ({ children, className = "" }: { children: ReactNode; className?: string }) => (
   <div

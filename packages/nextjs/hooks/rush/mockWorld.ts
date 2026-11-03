@@ -138,7 +138,7 @@ const board = (w: MockWorld, address: string, name: string, teamwork: boolean, n
 /** Applies one push to a copy of the world, like the contract's push(name). Throws on revert. */
 export const applyPush = (prev: MockWorld, address: string, rawName: string, now = nowSec()) => {
   const name = rawName.trim().slice(0, 20);
-  if (!name) throw new Error("Name chahiye");
+  if (!name) throw new Error("NameRequired");
   const w = structuredClone(prev);
   if (hasDeparted(w.train, now)) rollover(w);
   const t = w.train;

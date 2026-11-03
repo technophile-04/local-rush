@@ -18,10 +18,10 @@ export const hasDeparted = (train: TrainView, now: number) =>
   train.departsAt > 0 && (now >= train.departsAt || train.riders.length >= train.capacity);
 
 export const CROWD_STOPS = [
-  { upTo: 0.4, label: "Comfortable", color: "#22c55e" },
-  { upTo: 0.7, label: "Fourth seat", color: "#facc15" },
-  { upTo: 0.9, label: "Feet off floor", color: "#f97316" },
-  { upTo: Infinity, label: "Door pe latak raha", color: "#ef4444" },
+  { upTo: 0.4, label: "Comfortable", phone: "Comfortable", color: "#22c55e" },
+  { upTo: 0.7, label: "Fourth seat", phone: "Fourth seat", color: "#facc15" },
+  { upTo: 0.9, label: "Feet off floor", phone: "Feet off floor", color: "#f97316" },
+  { upTo: Infinity, label: "Door pe latak raha", phone: "Hanging at the door", color: "#ef4444" },
 ] as const;
 
 export const crowdLevel = (riders: number, capacity: number) => {
@@ -55,16 +55,16 @@ export const dueLabel = (seconds: number) => {
   return `${Math.ceil(seconds / 60)} min`;
 };
 
-/** Turns any push/send failure into a Mumbai-style line for the phone. */
-export const rushErrorText = (error: unknown) => {
+/** Turns a push/send/login failure into a short plain-English line for the phone. */
+export const rushErrorText = (error: unknown, fallback = "Couldn't push, try again") => {
   const message = getParsedError(error);
-  if (/AlreadyOnTrain/i.test(message)) return "Andar ho bhai. Agli train ka wait karo";
-  if (/AlreadyHanging/i.test(message)) return "Tu already door pe hai! Kisi aur ko dhakka dene bol";
-  if (/NotLoggedIn/i.test(message)) return "Pehle login karo, phir dhakka";
-  if (/InvalidAddress/i.test(message)) return "Yeh address galat hai bhai";
-  if (/Name chahiye/i.test(message)) return "Naam toh likho!";
-  if (/reject|denied|cancel/i.test(message)) return "Arre, cancel kar diya? Phir se dabao";
-  return "Signal gaya, phir se try karo";
+  if (/AlreadyOnTrain/i.test(message)) return "You're on this train. Wait for the next one";
+  if (/AlreadyHanging/i.test(message)) return "You're already at the door. Someone else needs to push";
+  if (/NotLoggedIn/i.test(message)) return "Log in first";
+  if (/InvalidAddress/i.test(message)) return "That address doesn't look right";
+  if (/NameRequired/i.test(message)) return "Enter your name first";
+  if (/reject|denied|cancel/i.test(message)) return "Cancelled. Try again";
+  return fallback;
 };
 
 export const sameAddress = (a?: string, b?: string) => !!a && !!b && a.toLowerCase() === b.toLowerCase();

@@ -12,9 +12,9 @@ export const JoinCorner = ({ mock }: { mock: boolean }) => {
       </div>
       <div className="flex min-w-0 flex-col gap-[0.8cqh] font-display text-[#1a0f0a]">
         <span className="text-[4.6cqh] font-extrabold leading-[0.95]">
-          Scan karo,
+          Scan
           <br />
-          chadho!
+          to board
         </span>
         <span className="[overflow-wrap:anywhere] text-[2.5cqh] font-bold leading-tight">
           {url.replace(/^https?:\/\//, "")}

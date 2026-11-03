@@ -141,7 +141,7 @@ const CoachBody = memo(function CoachBody({ virarFast }: { virarFast: boolean })
         </text>
       </g>
       <text x="610" y="214" fontSize="22" fontWeight="800" fill="#f4dc8a" fontFamily="var(--font-baloo), sans-serif">
-        {virarFast ? "८.१५ विरार फास्ट" : "पश्चिम रेलवे"}
+        {virarFast ? "8.15 VIRAR FAST" : "WESTERN RAILWAY"}
       </text>
       {/* undercarriage */}
       <rect x="40" y="248" width="920" height="10" fill="#2b2b2b" />
@@ -152,7 +152,7 @@ const CoachBody = memo(function CoachBody({ virarFast }: { virarFast: boolean })
   );
 });
 
-const OBSTACLES = ["ARM ATKA!", "BAG ATKI!", "DUPATTA!", "TIFFIN!"];
+const OBSTACLES = ["ARM!", "BAG!", "DUPATTA!", "TIFFIN!"];
 
 type CoachProps = {
   trainId: bigint | null;

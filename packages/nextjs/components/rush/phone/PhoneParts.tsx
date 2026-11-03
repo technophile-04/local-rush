@@ -7,13 +7,13 @@ export const MiniBoard = ({ train, now }: { train: TrainView | null; now: number
   if (!train) {
     return (
       <div className="rounded-xl border-4 border-[#2a2a2a] bg-black px-4 py-3 font-led text-2xl font-black text-[#ffb000]">
-        Train aa rahi hai…
+        Train arriving…
       </div>
     );
   }
   const departed = hasDeparted(train, now);
   const level = crowdLevel(train.riders.length, train.capacity);
-  const time = departed ? "chali gayi" : train.departsAt ? countdown(train.departsAt - now) : "-:--";
+  const time = departed ? "departed" : train.departsAt ? countdown(train.departsAt - now) : "-:--";
   return (
     <div className="rounded-xl border-4 border-[#2a2a2a] bg-black px-4 py-3 shadow-lg">
       <div
@@ -29,7 +29,7 @@ export const MiniBoard = ({ train, now }: { train: TrainView | null; now: number
           className="rounded-md px-2 font-display text-sm font-extrabold leading-6 text-[#1a0f0a]"
           style={{ background: level.color }}
         >
-          {level.label}
+          {level.phone}
         </span>
       </div>
     </div>
@@ -37,9 +37,9 @@ export const MiniBoard = ({ train, now }: { train: TrainView | null; now: number
 };
 
 const METHODS: { method: LoginMethod; label: string; hint: string }[] = [
-  { method: "passkey", label: "Passkey se login", hint: "Face / fingerprint. Ticket stays with you." },
-  { method: "burner", label: "Quick ticket, no login", hint: "Fastest. Lives in this browser." },
-  { method: "wallet", label: "Connect my wallet", hint: "MetaMask, Rainbow, Coinbase…" },
+  { method: "passkey", label: "Passkey login", hint: "Face / fingerprint. Ticket stays with you." },
+  { method: "burner", label: "Quick ticket (no login)", hint: "Fastest. Lives in this browser." },
+  { method: "wallet", label: "Connect wallet", hint: "MetaMask, Rainbow, Coinbase…" },
 ];
 
 const METHOD_NAMES: Record<LoginMethod, string> = { passkey: "Passkey", burner: "Quick ticket", wallet: "Wallet" };
@@ -72,7 +72,7 @@ export const LoginPanel = ({ session }: { session: RushSession }) => {
             try {
               await session.login(method);
             } catch (e) {
-              setError(rushErrorText(e));
+              setError(rushErrorText(e, "Couldn't log in, try again"));
             }
           }}
         >
@@ -146,7 +146,7 @@ const TicketCard = ({ ticket, actions }: { ticket: Ticket; actions: RushActions 
       )}
       <div className="px-3 py-2">
         {!ticket.held ? (
-          <div className="font-display text-lg font-extrabold text-green-700">Sent ✓ — your wallet mein hai</div>
+          <div className="font-display text-lg font-extrabold text-green-700">Sent ✓</div>
         ) : !open ? (
           <button
             className="btn btn-sm btn-outline border-2 border-[#1a0f0a] text-[#1a0f0a]"
@@ -168,13 +168,13 @@ const TicketCard = ({ ticket, actions }: { ticket: Ticket; actions: RushActions 
                     await actions.sendTicket(ticket.tokenId, to);
                     setOpen(false);
                   } catch (e) {
-                    setError(rushErrorText(e));
+                    setError(rushErrorText(e, "Couldn't send, try again"));
                   } finally {
                     setSending(false);
                   }
                 }}
               >
-                {sending ? <span className="loading loading-spinner loading-xs" /> : "Bhejo"}
+                {sending ? <span className="loading loading-spinner loading-xs" /> : "Send"}
               </button>
               <button className="btn btn-sm btn-ghost" onClick={() => setOpen(false)} disabled={sending}>
                 Cancel
