@@ -52,6 +52,14 @@ export function useChainRush(): RushSource {
   const { writeContractAsync } = useScaffoldWriteContract({ contractName: "LocalRush", chainId: base.id });
   const method = useSyncExternalStore(subscribeLoginMethod, getLoginMethod, getServerLoginMethod);
   useEffect(restoreLoginMethod, []);
+  // wagmi's Base Account connector imports its SDK on the first connect. Doing that after the tap
+  // loses the browser's user-gesture window, so the passkey popup gets blocked. Load it up front.
+  useEffect(() => {
+    connectors
+      .find(candidate => candidate.id === "baseAccount")
+      ?.getProvider()
+      .catch(() => undefined);
+  }, [connectors]);
 
   const quickQuery = {
     queryKey: quickTicketQueryKey,
