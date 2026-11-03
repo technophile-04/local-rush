@@ -132,7 +132,15 @@ export const RushPhone = () => {
 
         <div className="relative flex flex-col items-center gap-3 py-2">
           <PushDoor
-            look={state.kind === "pushing" ? "pushing" : onboard || busy ? "crowded" : blocked ? "closed" : "open"}
+            look={
+              state.kind === "pushing"
+                ? "pushing"
+                : !name.trim() || !ready || !train
+                  ? "closed"
+                  : onboard || busy
+                    ? "crowded"
+                    : "open"
+            }
             sign={state.kind === "pushing" ? "Pushing…" : (blocked ?? "Grab the pole to push")}
             onPush={push}
           />
