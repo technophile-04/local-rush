@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { RainbowKitProvider, darkTheme, lightTheme } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AppProgressBar as ProgressBar } from "next-nprogress-bar";
@@ -12,9 +13,19 @@ import { Header } from "~~/components/Header";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { wagmiConfig } from "~~/services/web3/wagmiConfig";
 
+// Game routes render full-bleed; SE-2 dev routes (/debug, /blockexplorer) keep the header and footer.
+const GAME_ROUTES = ["/", "/screen"];
 
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
-
+  const pathname = usePathname();
+  if (GAME_ROUTES.includes(pathname)) {
+    return (
+      <>
+        {children}
+        <Toaster />
+      </>
+    );
+  }
   return (
     <>
       <div className={`flex flex-col min-h-screen `}>
@@ -46,12 +57,15 @@ export const ScaffoldEthAppWithProviders = ({ children }: { children: React.Reac
 
   return (
     <WagmiProvider config={wagmiConfig}>
-    <QueryClientProvider client={queryClient}>
-    <RainbowKitProvider avatar={BlockieAvatar} theme={mounted ? (isDarkMode ? darkTheme() : lightTheme()) : lightTheme()}>
-      <ProgressBar height="3px" color="#2299dd" />
-      <ScaffoldEthApp>{children}</ScaffoldEthApp>
-    </RainbowKitProvider>
-    </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitProvider
+          avatar={BlockieAvatar}
+          theme={mounted ? (isDarkMode ? darkTheme() : lightTheme()) : lightTheme()}
+        >
+          <ProgressBar height="3px" color="#2299dd" />
+          <ScaffoldEthApp>{children}</ScaffoldEthApp>
+        </RainbowKitProvider>
+      </QueryClientProvider>
     </WagmiProvider>
   );
 };

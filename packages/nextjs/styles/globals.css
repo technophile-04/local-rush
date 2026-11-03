@@ -1,6 +1,12 @@
 @import "tailwindcss";
+@import "./rush.css";
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@theme inline {
+  --font-led: var(--font-doto), ui-monospace, monospace;
+  --font-display: var(--font-baloo), system-ui, sans-serif;
+}
 
 @theme {
   --shadow-center: 0 0 12px -2px rgb(0 0 0 / 0.05);
