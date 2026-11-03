@@ -42,8 +42,9 @@ export const MiniBoard = ({ train, now }: { train: TrainView | null; now: number
   );
 };
 
+// Passkey login is hidden for the Devcon talk: keys.coinbase.com flags this new vercel.app domain as
+// "unsafe" in its popup. Put the entry back once the domain is cleared with Coinbase.
 const METHODS: { method: LoginMethod; label: string; hint: string }[] = [
-  { method: "passkey", label: "Passkey login", hint: "Face / fingerprint. Ticket stays with you." },
   { method: "burner", label: "Quick ticket (no login)", hint: "Fastest. Lives in this browser." },
   { method: "wallet", label: "Connect wallet", hint: "MetaMask, Rainbow, Coinbase…" },
 ];
