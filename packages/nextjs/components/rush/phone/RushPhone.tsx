@@ -1,13 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { hasDeparted, rushErrorText, sameAddress, useNow } from "../rush";
+import { crowdLevel, hasDeparted, rushErrorText, sameAddress, useNow } from "../rush";
 import { Confetti, LoginPanel, MiniBoard, MyTickets } from "./PhoneParts";
 import { PhoneTrain } from "./PhoneTrain";
-import { PushDoor } from "./PushDoor";
+import { PushDoor, type PushEffort } from "./PushDoor";
 import { useRush } from "~~/hooks/rush/useRush";
 
 const NAME_KEY = "rush-name";
+
+// Comfortable, Fourth seat, Feet off floor, Door pe latak raha: the fuller the train, the harder the shove.
+const EFFORT: PushEffort[] = [
+  { taps: 3, drainPerSec: 0.45 },
+  { taps: 6, drainPerSec: 0.4 },
+  { taps: 10, drainPerSec: 0.33 },
+  { taps: 15, drainPerSec: 0.25 },
+];
 
 type PushState =
   | { kind: "idle"; note?: string }
@@ -22,6 +30,7 @@ export const RushPhone = () => {
   const now = useNow(500);
   const [name, setName] = useState("");
   const [state, setState] = useState<PushState>({ kind: "idle" });
+  const [kick, setKick] = useState(0);
 
   useEffect(() => setName(localStorage.getItem(NAME_KEY) ?? ""), []);
 
@@ -81,6 +90,8 @@ export const RushPhone = () => {
             : null;
   const busy = state.kind === "pushing" || state.kind === "hanging" || state.kind === "boarded";
 
+  const effort = EFFORT[train ? crowdLevel(train.riders.length, train.capacity).index : 0] ?? EFFORT[0];
+
   const push = async () => {
     navigator.vibrate?.(80);
     setState({ kind: "pushing" });
@@ -101,7 +112,7 @@ export const RushPhone = () => {
     <div className="min-h-screen bg-[#2b211c] bg-[radial-gradient(ellipse_at_top,#4a382e,transparent_60%)] font-display text-white">
       <div className="mx-auto flex max-w-md flex-col gap-4 px-4 pb-10 pt-4">
         <MiniBoard train={train} now={now} />
-        <PhoneTrain train={train} now={now} me={me} pushing={state.kind === "pushing"} />
+        <PhoneTrain train={train} now={now} me={me} pushing={state.kind === "pushing"} kick={kick} />
 
         <div className="flex items-center gap-3">
           <div className="rounded-md border-4 border-[#1a0f0a] bg-[#ffd200] px-3 py-0.5 text-center font-extrabold leading-tight text-[#111]">
@@ -141,7 +152,9 @@ export const RushPhone = () => {
                     ? "crowded"
                     : "open"
             }
-            sign={state.kind === "pushing" ? "Pushing…" : (blocked ?? "Grab the pole to push")}
+            effort={effort}
+            sign={state.kind === "pushing" ? "Pushing…" : (blocked ?? "Tap fast or hold the door to push in")}
+            onTap={() => setKick(k => k + 1)}
             onPush={push}
           />
           {(state.kind === "boarded" || state.kind === "rode") && <Confetti key={String(state.tokenId)} />}

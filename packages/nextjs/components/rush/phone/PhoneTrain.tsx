@@ -89,9 +89,10 @@ type PhoneTrainProps = {
   now: number;
   me?: string;
   pushing: boolean;
+  kick?: number; // bumps on every shove at the door, so the coach squeezes along
 };
 
-export const PhoneTrain = ({ train, now, me, pushing }: PhoneTrainProps) => {
+export const PhoneTrain = ({ train, now, me, pushing, kick = 0 }: PhoneTrainProps) => {
   const [caption, setCaption] = useState<Caption | null>(null);
   const [rodeOff, setRodeOff] = useState<bigint | null>(null); // a train that left with us on it
   const meRef = useRef(me);
@@ -170,6 +171,20 @@ export const PhoneTrain = ({ train, now, me, pushing }: PhoneTrainProps) => {
     return () => clearTimeout(t);
   }, [caption]);
 
+  // Every shove at the door squeezes the coach too (WAAPI, so riders don't remount and replay their pop).
+  const kickRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!kick || !kickRef.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    kickRef.current.animate(
+      [
+        { transform: "translateY(0) scale(1, 1)" },
+        { transform: "translateY(1.5%) scale(0.99, 1.015)", offset: 0.35 },
+        { transform: "translateY(0) scale(1, 1)" },
+      ],
+      { duration: 240, easing: "ease-out" },
+    );
+  }, [kick]);
+
   const riders = shown?.riders ?? [];
   const capacity = shown?.capacity ?? 30;
   const fill = capacity > 0 ? riders.length / capacity : 0;
@@ -211,7 +226,7 @@ export const PhoneTrain = ({ train, now, me, pushing }: PhoneTrainProps) => {
           {/* the coach */}
           <div className="absolute left-[5cqh] top-[18cqh] z-20 h-[46.5cqh] w-[150cqh]">
             <div key={stage.kind === "arriving" ? "arrive" : "coach"} className={`h-full ${coachMotion}`}>
-              <div className="relative h-full w-full">
+              <div ref={kickRef} className="relative h-full w-full" style={{ transformOrigin: "50% 100%" }}>
                 <CoachBody virarFast={!!shown?.virarFast} />
                 {closing &&
                   DOORS.map(x => (

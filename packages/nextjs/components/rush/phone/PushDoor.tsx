@@ -1,15 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /** open: tap to push · pushing: you're squeezing in · crowded: you're aboard or hanging · closed: can't push yet */
 export type DoorLook = "open" | "pushing" | "crowded" | "closed";
 
+/** How hard this door is to get through: taps to fill the meter, and how fast the crowd shoves it back. */
+export type PushEffort = { taps: number; drainPerSec: number };
+
 type PushDoorProps = {
   look: DoorLook;
+  effort: PushEffort;
   sign?: string; // small plate under the door, e.g. "You're on this train"
-  onPush: () => void;
+  onTap?: () => void; // every shove, so the coach can squeeze along
+  onPush: () => void; // fires once, when the meter fills
 };
+
+const HOLD_AFTER_MS = 250; // a press held this long starts filling on its own
+const HOLD_SEC_PER_TAP = 0.32; // holding fills a bit slower than mashing
+const DRAIN_AFTER_MS = 250; // the crowd shoves back once you pause
+
+// The commuters right at the door who shove back, as [left %, size %, which way they give way].
+const SHOVERS: [number, number, number][] = [
+  [-6, 46, -1],
+  [56, 48, 1],
+];
 
 // A few riders packed inside the doorway, as [left %, top %, size %, shade].
 const CROWD: [number, number, number, string][] = [
@@ -33,10 +48,81 @@ const Rider = ([x, y, s, c]: [number, number, number, string]) => (
   </div>
 );
 
-export const PushDoor = ({ look, sign, onPush }: PushDoorProps) => {
-  const [pressed, setPressed] = useState(false);
+export const PushDoor = ({ look, effort, sign, onTap, onPush }: PushDoorProps) => {
   const canPush = look === "open";
-  const grabbing = (pressed && canPush) || look === "pushing";
+  const [meter, setMeter] = useState(0);
+  const [kicks, setKicks] = useState(0);
+  const [holding, setHolding] = useState(false);
+  const meterRef = useRef(0);
+  const fired = useRef(false);
+  const press = useRef({ down: false, at: 0, lastTap: 0 });
+  const onPushRef = useRef(onPush);
+  useEffect(() => {
+    onPushRef.current = onPush;
+  }, [onPush]);
+
+  // The one place the meter moves; the real push fires exactly once, when it fills.
+  const apply = useCallback((next: number) => {
+    if (fired.current) return;
+    const m = Math.max(0, Math.min(1, next));
+    if (m === meterRef.current) return;
+    meterRef.current = m;
+    setMeter(m);
+    if (m >= 1) {
+      fired.current = true;
+      press.current.down = false;
+      setHolding(false);
+      onPushRef.current();
+    }
+  }, []);
+
+  // A door that opens again (new train, or the push failed) starts from an empty meter.
+  useEffect(() => {
+    if (!canPush) return;
+    fired.current = false;
+    meterRef.current = 0;
+    setMeter(0);
+  }, [canPush]);
+
+  // Holding fills, pausing drains.
+  useEffect(() => {
+    if (!canPush) return;
+    let last = performance.now();
+    const id = setInterval(() => {
+      const t = performance.now();
+      const dt = (t - last) / 1000;
+      last = t;
+      const p = press.current;
+      if (p.down && t - p.at > HOLD_AFTER_MS) apply(meterRef.current + dt / (effort.taps * HOLD_SEC_PER_TAP));
+      else if (!p.down && t - p.lastTap > DRAIN_AFTER_MS) apply(meterRef.current - dt * effort.drainPerSec);
+    }, 50);
+    return () => clearInterval(id);
+  }, [canPush, effort.taps, effort.drainPerSec, apply]);
+
+  const tap = () => {
+    if (!canPush || fired.current) return;
+    press.current.lastTap = performance.now();
+    navigator.vibrate?.(10);
+    setKicks(k => k + 1);
+    onTap?.();
+    apply(meterRef.current + 1 / effort.taps);
+  };
+  const release = () => {
+    press.current.down = false;
+    setHolding(false);
+  };
+
+  const grabbing = (holding && canPush) || look === "pushing";
+  const shoving = canPush || look === "pushing";
+  const shown = look === "pushing" ? 1 : meter;
+  const ladder =
+    look === "pushing"
+      ? "Chadh gaya!"
+      : canPush && meter > 0
+        ? meter < 0.5
+          ? "Aage chalo!"
+          : "Thoda adjust karo"
+        : null;
 
   return (
     <div className="flex flex-col items-center">
@@ -45,98 +131,145 @@ export const PushDoor = ({ look, sign, onPush }: PushDoorProps) => {
         aria-label="Push"
         aria-describedby={sign ? "push-door-sign" : undefined}
         disabled={!canPush}
-        onPointerDown={() => setPressed(true)}
-        onPointerUp={() => setPressed(false)}
-        onPointerLeave={() => setPressed(false)}
-        onClick={onPush}
+        onPointerDown={() => {
+          press.current = { ...press.current, down: true, at: performance.now() };
+          setHolding(true);
+          tap();
+        }}
+        onPointerUp={release}
+        onPointerLeave={release}
+        onPointerCancel={release}
+        onContextMenu={e => e.preventDefault()}
+        // keyboard (Enter / Space) arrives as a click with no pointer
+        onClick={e => e.detail === 0 && tap()}
         className={`group relative h-[19rem] w-64 select-none touch-manipulation ${
-          look === "pushing" ? "rush-door-lurch" : pressed && canPush ? "translate-y-[6px] scale-[0.985]" : ""
-        } transition-transform duration-75`}
+          look === "pushing" || (holding && canPush) ? "rush-door-lurch" : ""
+        }`}
       >
-        {/* coach body: cream upper band with the stencilled PUSH, maroon below */}
-        <div className="absolute inset-0 overflow-hidden rounded-t-[2.2rem] rounded-b-lg border-[5px] border-[#1a0f0a] bg-[#7a1f2b] shadow-[0_12px_0_#1a0f0a]">
-          <div className="absolute inset-x-0 top-0 h-[4.6rem] bg-[#f4dc8a]">
-            <div className="absolute inset-x-0 top-2 h-2 bg-[#7a1f2b]" />
-            <div
-              className={`absolute inset-x-0 top-[1.15rem] text-center font-display text-[2.9rem] font-extrabold leading-none tracking-[0.28em] ${
-                canPush ? "text-[#7a1f2b]" : "text-[#7a1f2b]/55"
-              }`}
-              style={{
-                WebkitMaskImage: "linear-gradient(to bottom, #000 0 47%, transparent 47% 55%, #000 55%)",
-                maskImage: "linear-gradient(to bottom, #000 0 47%, transparent 47% 55%, #000 55%)",
-                paddingLeft: "0.28em",
-              }}
-            >
-              PUSH
+        <div key={kicks} className={`absolute inset-0 ${kicks > 0 && canPush ? "rush-door-kick" : ""}`}>
+          {/* coach body: cream upper band with the stencilled PUSH, maroon below */}
+          <div className="absolute inset-0 overflow-hidden rounded-t-[2.2rem] rounded-b-lg border-[5px] border-[#1a0f0a] bg-[#7a1f2b] shadow-[0_12px_0_#1a0f0a]">
+            <div className="absolute inset-x-0 top-0 h-[4.6rem] bg-[#f4dc8a]">
+              <div className="absolute inset-x-0 top-2 h-2 bg-[#7a1f2b]" />
+              <div
+                className={`absolute inset-x-0 top-[1.15rem] text-center font-display text-[2.9rem] font-extrabold leading-none tracking-[0.28em] ${
+                  canPush ? "text-[#7a1f2b]" : "text-[#7a1f2b]/55"
+                }`}
+                style={{
+                  WebkitMaskImage: "linear-gradient(to bottom, #000 0 47%, transparent 47% 55%, #000 55%)",
+                  maskImage: "linear-gradient(to bottom, #000 0 47%, transparent 47% 55%, #000 55%)",
+                  paddingLeft: "0.28em",
+                }}
+              >
+                PUSH
+              </div>
             </div>
-          </div>
-          {/* rivets and grime */}
-          <div className="absolute inset-x-3 top-[4.9rem] flex justify-between">
-            {[0, 1, 2, 3, 4, 5].map(i => (
-              <span key={i} className="h-1.5 w-1.5 rounded-full bg-[#4a1219]" />
-            ))}
-          </div>
-          <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/35 to-transparent" />
-        </div>
-
-        {/* the doorway */}
-        <div className="absolute inset-x-[1.6rem] top-[5.4rem] bottom-[1.6rem] overflow-hidden rounded-t-md border-[4px] border-[#1a0f0a] bg-gradient-to-b from-[#120c0a] via-[#1f1512] to-[#2b1f1a]">
-          {/* ceiling light and the crowd inside */}
-          <div className="absolute inset-x-6 top-1 h-1.5 rounded-full bg-[#fff7d6]/70 blur-[1px]" />
-          <div className={look === "crowded" || look === "pushing" ? "rush-crowd-sway" : ""}>
-            {(look === "crowded" || look === "pushing" ? PACKED : CROWD).map(Rider)}
-          </div>
-          {/* hands on the overhead rail */}
-          <div className="absolute inset-x-0 top-5 h-1 bg-[#9ca3af]/60" />
-          {[18, 70].map(x => (
-            <div key={x} className="absolute top-4 h-3 w-2.5 rounded-sm bg-[#c68642]/70" style={{ left: `${x}%` }} />
-          ))}
-
-          {/* worn yellow edge strips */}
-          {["left-0", "right-0"].map(side => (
-            <div
-              key={side}
-              className={`absolute inset-y-0 ${side} w-3 bg-[#ffd200]`}
-              style={{
-                backgroundImage:
-                  "repeating-linear-gradient(to bottom, transparent 0 22px, rgb(120 90 0 / 0.45) 22px 25px, transparent 25px 41px, rgb(0 0 0 / 0.25) 41px 43px)",
-              }}
-            />
-          ))}
-
-          {/* the steel grab pole */}
-          <div
-            className={`absolute bottom-0 left-1/2 top-0 w-[14px] -translate-x-1/2 origin-bottom ${grabbing ? "rush-pole-flex" : ""}`}
-          >
-            <div className="h-full w-full rounded-full border-2 border-[#1a0f0a] bg-[linear-gradient(to_right,#4b5563,#e5e7eb_35%,#ffffff_45%,#9ca3af_65%,#374151)]">
-              {[18, 41, 63, 80].map(y => (
-                <span
-                  key={y}
-                  className="absolute left-[3px] h-[3px] w-[6px] rounded-full bg-[#3f3f46]/60"
-                  style={{ top: `${y}%` }}
-                />
+            {/* rivets and grime */}
+            <div className="absolute inset-x-3 top-[4.9rem] flex justify-between">
+              {[0, 1, 2, 3, 4, 5].map(i => (
+                <span key={i} className="h-1.5 w-1.5 rounded-full bg-[#4a1219]" />
               ))}
             </div>
-            {/* your hand, when grabbing */}
-            {grabbing && (
-              <div className="absolute left-1/2 top-[44%] h-6 w-8 -translate-x-1/2 rounded-lg border-2 border-[#1a0f0a] bg-[#c68642]" />
-            )}
+            <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/35 to-transparent" />
           </div>
 
-          {/* closed: sliding door panels with small windows */}
-          {look === "closed" &&
-            ["left-0 border-r-2", "right-0 border-l-2"].map(side => (
+          {/* the doorway */}
+          <div className="absolute inset-x-[1.6rem] top-[5.4rem] bottom-[2.1rem] overflow-hidden rounded-t-md border-[4px] border-[#1a0f0a] bg-gradient-to-b from-[#120c0a] via-[#1f1512] to-[#2b1f1a]">
+            {/* ceiling light and the crowd inside */}
+            <div className="absolute inset-x-6 top-1 h-1.5 rounded-full bg-[#fff7d6]/70 blur-[1px]" />
+            <div className={look === "crowded" || look === "pushing" ? "rush-crowd-sway" : ""}>
+              {(look === "crowded" || look === "pushing" ? PACKED : CROWD).map(Rider)}
+            </div>
+            {/* the people right at the door shove back, then give way as the meter climbs */}
+            {shoving &&
+              SHOVERS.map(([x, size, way]) => (
+                <div
+                  key={x}
+                  className="absolute bottom-[-8%] transition-transform duration-200 ease-out"
+                  style={{
+                    left: `${x}%`,
+                    width: `${size}%`,
+                    transform: `translateX(${way * shown * 60}%) scale(${1.12 - 0.3 * shown})`,
+                    transformOrigin: "50% 100%",
+                  }}
+                >
+                  <div key={kicks} className={`relative ${kicks > 0 && canPush ? "rush-shove" : ""}`}>
+                    {Rider([0, 0, 100, "#6b4a38"])}
+                    <div className="aspect-square w-full" />
+                  </div>
+                </div>
+              ))}
+            {/* hands on the overhead rail */}
+            <div className="absolute inset-x-0 top-5 h-1 bg-[#9ca3af]/60" />
+            {[18, 70].map(x => (
+              <div key={x} className="absolute top-4 h-3 w-2.5 rounded-sm bg-[#c68642]/70" style={{ left: `${x}%` }} />
+            ))}
+
+            {/* worn yellow edge strips */}
+            {["left-0", "right-0"].map(side => (
               <div
                 key={side}
-                className={`absolute inset-y-0 ${side} w-1/2 border-[#1a0f0a] bg-[linear-gradient(to_bottom,#8f9396,#6b6f72)]`}
-              >
-                <div className="mx-auto mt-6 h-16 w-3/5 rounded-sm border-2 border-[#1a0f0a] bg-[#2b1f1a]/80" />
-              </div>
+                className={`absolute inset-y-0 ${side} w-3 bg-[#ffd200]`}
+                style={{
+                  backgroundImage:
+                    "repeating-linear-gradient(to bottom, transparent 0 22px, rgb(120 90 0 / 0.45) 22px 25px, transparent 25px 41px, rgb(0 0 0 / 0.25) 41px 43px)",
+                }}
+              />
             ))}
-        </div>
 
-        {/* footboard */}
-        <div className="absolute inset-x-[1.2rem] bottom-[0.9rem] h-3 rounded-sm border-2 border-[#1a0f0a] bg-[#9aa0a6]" />
+            {/* the steel grab pole */}
+            <div
+              className={`absolute bottom-0 left-1/2 top-0 w-[14px] -translate-x-1/2 origin-bottom ${
+                grabbing ? "rush-pole-flex" : kicks > 0 && canPush ? "rush-pole-kick" : ""
+              }`}
+            >
+              <div className="h-full w-full rounded-full border-2 border-[#1a0f0a] bg-[linear-gradient(to_right,#4b5563,#e5e7eb_35%,#ffffff_45%,#9ca3af_65%,#374151)]">
+                {[18, 41, 63, 80].map(y => (
+                  <span
+                    key={y}
+                    className="absolute left-[3px] h-[3px] w-[6px] rounded-full bg-[#3f3f46]/60"
+                    style={{ top: `${y}%` }}
+                  />
+                ))}
+              </div>
+              {/* your hand, when grabbing */}
+              {grabbing && (
+                <div className="absolute left-1/2 top-[44%] h-6 w-8 -translate-x-1/2 rounded-lg border-2 border-[#1a0f0a] bg-[#c68642]" />
+              )}
+            </div>
+
+            {/* closed: sliding door panels with small windows */}
+            {look === "closed" &&
+              ["left-0 border-r-2", "right-0 border-l-2"].map(side => (
+                <div
+                  key={side}
+                  className={`absolute inset-y-0 ${side} w-1/2 border-[#1a0f0a] bg-[linear-gradient(to_bottom,#8f9396,#6b6f72)]`}
+                >
+                  <div className="mx-auto mt-6 h-16 w-3/5 rounded-sm border-2 border-[#1a0f0a] bg-[#2b1f1a]/80" />
+                </div>
+              ))}
+          </div>
+
+          {/* the push meter, on the footboard */}
+          <div className="absolute inset-x-[1.2rem] bottom-[0.55rem] h-6 overflow-hidden rounded-md border-[3px] border-[#1a0f0a] bg-[#3a3330]">
+            <div
+              className="h-full bg-[#ffd200] bg-[repeating-linear-gradient(135deg,transparent_0_8px,rgb(0_0_0/0.18)_8px_14px)] transition-[width] duration-100 ease-out"
+              style={{
+                width: `${shown * 100}%`,
+                backgroundColor: shown >= 1 ? "#22c55e" : shown > 0.5 ? "#facc15" : "#f97316",
+              }}
+            />
+          </div>
+
+          {ladder && (
+            <div
+              key={ladder}
+              className="rush-ladder pointer-events-none absolute inset-x-0 top-[6.2rem] z-10 text-center font-display text-3xl font-extrabold text-[#ffd200] [paint-order:stroke_fill] [-webkit-text-stroke:6px_#1a0f0a] [text-shadow:0_3px_0_#1a0f0a]"
+            >
+              {ladder}
+            </div>
+          )}
+        </div>
       </button>
 
       {sign && (
