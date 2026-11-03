@@ -12,6 +12,7 @@ type PushState =
   | { kind: "pushing" }
   | { kind: "boarded"; trainId: bigint; seat: number; tokenId: bigint; teamwork: boolean }
   | { kind: "hanging"; trainId: bigint; until: number }
+  | { kind: "rode"; trainId: bigint; seat: number; tokenId: bigint } // pulled in, and the train already left
   | { kind: "error"; message: string };
 
 export const RushPhone = () => {
@@ -26,21 +27,35 @@ export const RushPhone = () => {
   const me = session.status === "ready" ? session.address : undefined;
   const departed = !!train && hasDeparted(train, now);
   const myRider = train && !departed ? train.riders.find(r => sameAddress(r.address, me)) : undefined;
+  const myHang =
+    train && !departed && train.doorHanger && sameAddress(train.doorHanger.address, me) && now <= train.doorHanger.until
+      ? train.doorHanger
+      : undefined;
 
   // Follow the train: a door hanger either gets pulled in or falls off; a departed train frees the button.
   useEffect(() => {
     if (!train) return;
+    if (myHang && (state.kind === "idle" || state.kind === "error")) {
+      // After a reload (or a failed retry) the chain still has us at the door.
+      setState({ kind: "hanging", trainId: train.trainId, until: myHang.until });
+      return;
+    }
     if (state.kind === "hanging") {
-      if (state.trainId !== train.trainId || departed) {
+      // The push that pulls us in can also fill the train, so the feed may already show the next one.
+      const riders =
+        state.trainId === train.trainId
+          ? train.riders
+          : train.lastDeparted?.trainId === state.trainId
+            ? train.lastDeparted.riderList
+            : undefined;
+      const mine =
+        riders?.find(r => sameAddress(r.address, me)) ?? actions.tickets.find(t => t.trainId === state.trainId);
+      if (mine && state.trainId === train.trainId && !departed) {
+        setState({ kind: "boarded", trainId: train.trainId, seat: mine.seat, tokenId: mine.tokenId, teamwork: true });
+      } else if (mine) {
+        setState({ kind: "rode", trainId: state.trainId, seat: mine.seat, tokenId: mine.tokenId });
+      } else if (state.trainId !== train.trainId || departed) {
         setState({ kind: "idle", note: "The train left without you. Push again for the next one" });
-      } else if (myRider) {
-        setState({
-          kind: "boarded",
-          trainId: train.trainId,
-          seat: myRider.seat,
-          tokenId: myRider.tokenId,
-          teamwork: true,
-        });
       } else if (now > state.until + 1) {
         setState({ kind: "idle", note: "You fell off the door. Push again" });
       }
@@ -48,7 +63,7 @@ export const RushPhone = () => {
     if (state.kind === "boarded" && (state.trainId !== train.trainId || departed)) {
       setState({ kind: "idle", note: `Train #${state.trainId} departed. Your ticket is below` });
     }
-  }, [train, now, departed, myRider, state]);
+  }, [train, now, departed, myHang, me, actions.tickets, state]);
 
   const ready = session.status === "ready";
   const onboard = !!myRider && state.kind !== "boarded";
@@ -137,7 +152,7 @@ export const RushPhone = () => {
               </>
             )}
           </button>
-          {state.kind === "boarded" && <Confetti key={String(state.tokenId)} />}
+          {(state.kind === "boarded" || state.kind === "rode") && <Confetti key={String(state.tokenId)} />}
         </div>
 
         <StatusCard state={state} now={now} onboard={onboard} />
@@ -167,6 +182,19 @@ const StatusCard = ({ state, now, onboard }: { state: PushState; now: number; on
           </div>
           {state.teamwork && <div className="font-bold">★ Teamwork push: someone pulled you in</div>}
           <div className="mt-1 text-sm font-bold">Look for your name on the big screen</div>
+        </div>
+      );
+    case "rode":
+      return (
+        <div className="rounded-2xl border-4 border-[#1a0f0a] bg-[#22c55e] p-4 text-center text-[#1a0f0a]">
+          <div className="text-4xl font-extrabold">Boarded!</div>
+          <div className="text-xl font-extrabold">
+            Seat {state.seat} · Ticket #{String(state.tokenId)}
+          </div>
+          <div className="font-bold">★ Teamwork push: someone pulled you in</div>
+          <div className="mt-1 text-sm font-bold">
+            Train #{String(state.trainId)} has left. Push again for the next one
+          </div>
         </div>
       );
     case "hanging":
