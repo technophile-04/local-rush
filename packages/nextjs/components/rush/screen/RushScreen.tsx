@@ -36,7 +36,11 @@ const useDeparture = (train: TrainView | null, now: number, onLeave: () => void,
     if (!train || stage.kind !== "live") return;
     const prev = lastLive.current;
     let leaving: TrainView | null = null;
-    if (prev && prev.trainId !== train.trainId && !left.has(prev.trainId) && prev.riders.length > 0) leaving = prev;
+    const departing = prev && prev.trainId !== train.trainId && !left.has(prev.trainId) ? prev : null;
+    // Riders who boarded after our last poll are only in the feed's final list for that train.
+    const finalRiders = departing && train.lastDeparted?.trainId === departing.trainId && train.lastDeparted.riderList;
+    if (departing && finalRiders) leaving = { ...departing, riders: finalRiders };
+    else if (departing && departing.riders.length > 0) leaving = departing;
     else if (hasDeparted(train, now) && !left.has(train.trainId)) leaving = train;
     if (!left.has(train.trainId)) lastLive.current = train;
     if (leaving) {

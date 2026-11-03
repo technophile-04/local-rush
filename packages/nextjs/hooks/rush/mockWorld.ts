@@ -112,7 +112,7 @@ const rollover = (w: MockWorld) => {
     { trainId: old.trainId, riders: old.riders.length, destination: old.destination, virarFast: old.virarFast },
     ...w.stats.recentTrains,
   ].slice(0, 5);
-  w.train = newTrain(old.trainId + 1n, { trainId: old.trainId, riders: old.riders.length });
+  w.train = newTrain(old.trainId + 1n, { trainId: old.trainId, riders: old.riders.length, riderList: old.riders });
 };
 
 const board = (w: MockWorld, address: string, name: string, teamwork: boolean, now: number): Rider => {

@@ -1,4 +1,4 @@
-import type { RushStats, Ticket, TrainView } from "~~/types/rush";
+import type { Rider, RushStats, Ticket, TrainView } from "~~/types/rush";
 
 function object(value: unknown): Record<string, unknown> {
   if (typeof value !== "object" || value === null || Array.isArray(value)) throw new Error("Invalid feed response.");
@@ -31,6 +31,17 @@ function id(value: unknown) {
   return BigInt(decimal);
 }
 
+function rider(value: unknown): Rider {
+  const rider = object(value);
+  return {
+    address: text(rider.address),
+    name: text(rider.name),
+    seat: number(rider.seat),
+    teamwork: boolean(rider.teamwork),
+    tokenId: id(rider.tokenId),
+  };
+}
+
 export function parseTrainView(value: unknown): TrainView {
   const train = object(value);
   const hanger = train.doorHanger === null ? null : object(train.doorHanger);
@@ -43,18 +54,15 @@ export function parseTrainView(value: unknown): TrainView {
     teamworkFrom: number(train.teamworkFrom),
     firstBoardAt: number(train.firstBoardAt),
     departsAt: number(train.departsAt),
-    riders: array(train.riders).map(value => {
-      const rider = object(value);
-      return {
-        address: text(rider.address),
-        name: text(rider.name),
-        seat: number(rider.seat),
-        teamwork: boolean(rider.teamwork),
-        tokenId: id(rider.tokenId),
-      };
-    }),
+    riders: array(train.riders).map(rider),
     doorHanger: hanger ? { address: text(hanger.address), name: text(hanger.name), until: number(hanger.until) } : null,
-    lastDeparted: departed ? { trainId: id(departed.trainId), riders: number(departed.riders) } : null,
+    lastDeparted: departed
+      ? {
+          trainId: id(departed.trainId),
+          riders: number(departed.riders),
+          riderList: departed.riderList === undefined ? undefined : array(departed.riderList).map(rider),
+        }
+      : null,
   };
 }
 

@@ -1,23 +1,44 @@
 import { type Address, createPublicClient, http, zeroAddress } from "viem";
 import { base } from "viem/chains";
 import { rushContract } from "~~/services/rush/contract";
-import type { Ticket, TrainView } from "~~/types/rush";
+import type { Rider, Ticket, TrainView } from "~~/types/rush";
 
 export const baseReadClient = createPublicClient({
   chain: base,
   transport: http(process.env.BASE_RPC_URL || "https://mainnet.base.org"),
 });
 
-async function readTrain(): Promise<TrainView> {
-  // Read both calls at one block so a departure cannot mix two trains' state.
-  const blockNumber = await baseReadClient.getBlockNumber({ cacheTime: 0 });
-  const state = await baseReadClient.readContract({ ...rushContract, functionName: "status", blockNumber });
+// A departed train's riders never change, so each one is read once per server instance.
+const departedRiders = new Map<bigint, Promise<Rider[]>>();
+
+async function readRiders(trainId: bigint, blockNumber: bigint): Promise<Rider[]> {
   const riders = await baseReadClient.readContract({
     ...rushContract,
     functionName: "getRiders",
-    args: [state.trainId],
+    args: [trainId],
     blockNumber,
   });
+  return riders.map(({ rider, ...rest }) => ({ address: rider, ...rest }));
+}
+
+function readDepartedRiders(trainId: bigint, blockNumber: bigint) {
+  let riders = departedRiders.get(trainId);
+  if (!riders) {
+    riders = readRiders(trainId, blockNumber);
+    departedRiders.set(trainId, riders);
+    riders.catch(() => departedRiders.delete(trainId));
+  }
+  return riders;
+}
+
+async function readTrain(): Promise<TrainView> {
+  // Read every call at one block so a departure cannot mix two trains' state.
+  const blockNumber = await baseReadClient.getBlockNumber({ cacheTime: 0 });
+  const state = await baseReadClient.readContract({ ...rushContract, functionName: "status", blockNumber });
+  const [riders, riderList] = await Promise.all([
+    readRiders(state.trainId, blockNumber),
+    state.lastDepartedTrainId === 0n ? undefined : readDepartedRiders(state.lastDepartedTrainId, blockNumber),
+  ]);
   return {
     trainId: state.trainId,
     destination: state.destination,
@@ -26,7 +47,7 @@ async function readTrain(): Promise<TrainView> {
     teamworkFrom: Number(state.teamworkFrom),
     firstBoardAt: Number(state.firstBoardAt),
     departsAt: Number(state.departsAt),
-    riders: riders.map(({ rider, ...rest }) => ({ address: rider, ...rest })),
+    riders,
     doorHanger:
       state.doorHanger === zeroAddress
         ? null
@@ -34,7 +55,7 @@ async function readTrain(): Promise<TrainView> {
     lastDeparted:
       state.lastDepartedTrainId === 0n
         ? null
-        : { trainId: state.lastDepartedTrainId, riders: Number(state.lastDepartedRiders) },
+        : { trainId: state.lastDepartedTrainId, riders: Number(state.lastDepartedRiders), riderList },
   };
 }
 

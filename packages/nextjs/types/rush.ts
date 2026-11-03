@@ -26,7 +26,8 @@ export type TrainView = {
   departsAt: number; // unix seconds, 0 while nobody has boarded; also departs when full
   riders: Rider[]; // boarding order
   doorHanger: DoorHanger | null;
-  lastDeparted: { trainId: bigint; riders: number } | null;
+  // riderList: the departed train's final riders, so a train that filled between polls still departs with every name
+  lastDeparted: { trainId: bigint; riders: number; riderList?: Rider[] } | null;
 };
 
 export type RushStats = {
