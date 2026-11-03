@@ -6,6 +6,7 @@ const VB_TOP = -50;
 const VB_H = 310;
 const DOORS = [120, 460, 800]; // left edge of each door opening, 80 wide
 const DOOR_W = 80;
+const MAGENTA = "#a8175f";
 const WINDOWS = [35, 215, 295, 375, 555, 635, 715, 895]; // left edge, 70 wide
 const WIN_W = 70;
 
@@ -86,7 +87,7 @@ export const Figure = ({
         <div
           className={
             tagClassName ??
-            `-mt-[0.6cqh] max-w-[13cqh] truncate rounded-[0.6cqh] border-[0.3cqh] border-[#1a0f0a] px-[0.6cqh] font-display text-[2.4cqh] font-extrabold leading-[1.25] ${
+            `-mt-[0.6cqh] max-w-[14cqh] truncate rounded-[0.6cqh] border-[0.3cqh] border-[#1a0f0a] px-[0.6cqh] font-display text-[2.8cqh] font-extrabold leading-[1.25] ${
               latest ? "bg-[#ffd200] text-[#1a0f0a]" : "bg-white text-[#1a0f0a]"
             }`
           }
@@ -108,43 +109,64 @@ const CoachBody = memo(function CoachBody({ virarFast }: { virarFast: boolean })
         <path d="M450 -40 L550 -40" strokeWidth="8" />
       </g>
       {/* roof */}
-      <rect x="4" y="0" width="992" height="30" rx="14" fill="#9aa0a6" stroke="#1a0f0a" strokeWidth="4" />
-      {/* upper body cream, maroon band, lower maroon */}
-      <rect x="0" y="20" width="1000" height="230" rx="10" fill="#f4dc8a" stroke="#1a0f0a" strokeWidth="5" />
-      <rect x="2" y="24" width="996" height="14" fill="#7a1f2b" />
-      <rect x="2" y="150" width="996" height="98" fill="#7a1f2b" />
-      <rect x="2" y="168" width="996" height="8" fill="#f4dc8a" />
-      {/* windows with bars */}
+      <rect x="4" y="0" width="992" height="30" rx="14" fill="#cfd3d8" stroke="#1a0f0a" strokeWidth="4" />
+      {/* today's WR livery: off-white body, magenta cant-rail stripe and lower band */}
+      <rect x="0" y="20" width="1000" height="230" rx="10" fill="#f3f1ee" stroke="#1a0f0a" strokeWidth="5" />
+      <rect x="2" y="26" width="996" height="7" fill={MAGENTA} />
+      <rect x="2" y="176" width="996" height="58" fill={MAGENTA} />
+      {/* windows: light grey frames, dark glass, grilles */}
       {WINDOWS.map(x => (
         <g key={x}>
-          <rect x={x} y={52} width={WIN_W} height={88} rx="6" fill="#2b1d17" stroke="#1a0f0a" strokeWidth="4" />
+          <rect x={x - 4} y={48} width={WIN_W + 8} height={96} rx="8" fill="#c4c8cc" stroke="#1a0f0a" strokeWidth="3" />
+          <rect x={x} y={52} width={WIN_W} height={88} rx="5" fill="#262b31" />
           {[1, 2, 3, 4, 5].map(i => (
-            <line key={i} x1={x + i * 11.7} x2={x + i * 11.7} y1={54} y2={138} stroke="#b9b9b9" strokeWidth="3" />
+            <line key={i} x1={x + i * 11.7} x2={x + i * 11.7} y1={54} y2={138} stroke="#9ca3af" strokeWidth="3" />
           ))}
         </g>
       ))}
-      {/* open door gaps with grab poles */}
+      {/* magenta door surrounds around the open gaps, with grab poles */}
       {DOORS.map(x => (
         <g key={x}>
+          <rect x={x - 12} y={34} width={DOOR_W + 24} height={216} fill={MAGENTA} stroke="#1a0f0a" strokeWidth="3" />
           <rect x={x} y={40} width={DOOR_W} height={208} fill="#1f1512" stroke="#1a0f0a" strokeWidth="4" />
-          <rect x={x - 6} y={40} width={6} height={208} fill="#ffd200" />
-          <rect x={x + DOOR_W} y={40} width={6} height={208} fill="#ffd200" />
           <line x1={x + DOOR_W / 2} x2={x + DOOR_W / 2} y1={44} y2={244} stroke="#d4d4d4" strokeWidth="5" />
+        </g>
+      ))}
+      {/* round railway emblem badges on the band */}
+      {[60, 700, 950].map(cx => (
+        <g key={cx}>
+          <circle cx={cx} cy={205} r={17} fill="#f3f1ee" stroke="#1a0f0a" strokeWidth="2.5" />
+          <circle cx={cx} cy={205} r={11} fill="#facc15" stroke="#1d4ed8" strokeWidth="3" />
+          <circle cx={cx} cy={205} r={4} fill="#1d4ed8" />
         </g>
       ))}
       {/* coach number plate with a small Ethereum diamond */}
       <g transform="translate(250 188)">
-        <rect width="170" height="40" rx="5" fill="#111" stroke="#f4dc8a" strokeWidth="3" />
+        <rect width="170" height="40" rx="5" fill="#111" stroke="#f3f1ee" strokeWidth="3" />
         <path d="M18 6 L30 20 L18 27 L6 20 Z M18 29 L30 22 L18 36 L6 22 Z" fill="#a5b4fc" />
         <text x="40" y="29" fontSize="24" fontWeight="800" fill="#fff" fontFamily="var(--font-baloo), sans-serif">
           WR 8008 A
         </text>
       </g>
-      <text x="548" y="214" fontSize="20" fontWeight="800" fill="#f4dc8a" fontFamily="var(--font-baloo), sans-serif">
-        {virarFast ? "8.15 VIRAR FAST" : "WESTERN RAILWAY"}
-      </text>
+      {virarFast ? (
+        <text x="560" y="214" fontSize="22" fontWeight="800" fill="#fff" fontFamily="var(--font-baloo), sans-serif">
+          8.15 VIRAR FAST
+        </text>
+      ) : (
+        <text
+          x="575"
+          y="226"
+          fontSize="54"
+          fontWeight="800"
+          fill="#fff"
+          letterSpacing="4"
+          fontFamily="var(--font-baloo), sans-serif"
+        >
+          WR
+        </text>
+      )}
       {/* undercarriage */}
-      <rect x="40" y="248" width="920" height="10" fill="#2b2b2b" />
+      <rect x="40" y="248" width="920" height="10" fill="#3a3d42" />
       {[90, 190, 810, 910].map(cx => (
         <circle key={cx} cx={cx} cy={256} r={16} fill="#3a3a3a" stroke="#111" strokeWidth="4" />
       ))}
@@ -179,8 +201,12 @@ export const Coach = ({ trainId, riders, capacity, virarFast, latestSeats, hange
             className="absolute overflow-hidden"
             style={{ ...pct(x, 40), width: "8%", height: `${(208 / VB_H) * 100}%` }}
           >
-            <div className="rush-door-left absolute inset-y-0 left-0 w-1/2 border-r-[0.3cqh] border-[#1a0f0a] bg-[#8f9396]/85" />
-            <div className="rush-door-right absolute inset-y-0 right-0 w-1/2 border-l-[0.3cqh] border-[#1a0f0a] bg-[#8f9396]/85" />
+            <div className="rush-door-left absolute inset-y-0 left-0 w-1/2 border-r-[0.3cqh] border-[#1a0f0a] bg-[#a8175f]">
+              <div className="absolute left-[30%] top-[8%] h-[38%] w-[40%] rounded-[0.4cqh] bg-[#262b31]" />
+            </div>
+            <div className="rush-door-right absolute inset-y-0 right-0 w-1/2 border-l-[0.3cqh] border-[#1a0f0a] bg-[#a8175f]">
+              <div className="absolute left-[30%] top-[8%] h-[38%] w-[40%] rounded-[0.4cqh] bg-[#262b31]" />
+            </div>
           </div>
         ))}
       {riders.slice(0, SLOTS.length).map((r, i) => {
