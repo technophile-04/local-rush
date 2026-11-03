@@ -4,15 +4,15 @@ import type { DoorHanger, Rider } from "~~/types/rush";
 // Coach geometry in SVG viewBox units: x 0..1000, y -50..260 (pantograph above y=0, wheels below 250).
 const VB_TOP = -50;
 const VB_H = 310;
-const DOORS = [120, 460, 800]; // left edge of each door opening, 80 wide
-const DOOR_W = 80;
+export const DOORS = [120, 460, 800]; // left edge of each door opening, 80 wide
+export const DOOR_W = 80;
 const WINDOWS = [35, 215, 295, 375, 555, 635, 715, 895]; // left edge, 70 wide
 const WIN_W = 70;
 
 type Slot = { x: number; y: number; hangOut?: boolean };
 
 // Seats fill the coach evenly: window row A, door floor, window row B, door stacks, then hanging out.
-const SLOTS: Slot[] = (() => {
+export const SLOTS: Slot[] = (() => {
   const spread = [1, 4, 2, 5, 0, 7, 3, 6];
   const doorCx = DOORS.map(d => d + DOOR_W / 2);
   const slots: Slot[] = [];
@@ -31,7 +31,7 @@ const SHIRTS = ["#e11d48", "#2563eb", "#16a34a", "#f59e0b", "#9333ea", "#0891b2"
 
 const hashName = (s: string) => [...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
 
-const pct = (x: number, y: number): CSSProperties => ({
+export const pct = (x: number, y: number): CSSProperties => ({
   left: `${(x / 1000) * 100}%`,
   top: `${((y - VB_TOP) / VB_H) * 100}%`,
 });
@@ -99,7 +99,7 @@ export const Figure = ({
   );
 };
 
-const CoachBody = memo(function CoachBody({ virarFast }: { virarFast: boolean }) {
+export const CoachBody = memo(function CoachBody({ virarFast }: { virarFast: boolean }) {
   return (
     <svg viewBox={`0 ${VB_TOP} 1000 ${VB_H}`} className="absolute inset-0 h-full w-full" aria-hidden>
       {/* pantograph */}

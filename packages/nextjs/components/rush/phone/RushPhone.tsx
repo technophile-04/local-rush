@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { hasDeparted, rushErrorText, sameAddress, useNow } from "../rush";
 import { Confetti, LoginPanel, MiniBoard, MyTickets } from "./PhoneParts";
+import { PhoneTrain } from "./PhoneTrain";
 import { useRush } from "~~/hooks/rush/useRush";
 
 const NAME_KEY = "rush-name";
@@ -100,6 +101,7 @@ export const RushPhone = () => {
     <div className="min-h-screen bg-[#2b211c] bg-[radial-gradient(ellipse_at_top,#4a382e,transparent_60%)] font-display text-white">
       <div className="mx-auto flex max-w-md flex-col gap-4 px-4 pb-10 pt-4">
         <MiniBoard train={train} now={now} />
+        <PhoneTrain train={train} now={now} me={me} pushing={state.kind === "pushing"} />
 
         <div className="flex items-center gap-3">
           <div className="rounded-md border-4 border-[#1a0f0a] bg-[#ffd200] px-3 py-0.5 text-center font-extrabold leading-tight text-[#111]">

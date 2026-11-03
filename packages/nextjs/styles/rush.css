@@ -377,3 +377,72 @@
     transform: translateY(6px);
   }
 }
+
+/* Phone train (components/rush/phone/PhoneTrain.tsx) */
+@keyframes rush-phone-squeeze {
+  0%,
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+  30% {
+    transform: translateY(1.2cqh) scale(0.985, 1.02) rotate(-0.4deg);
+  }
+  60% {
+    transform: translateY(0.4cqh) scale(1.01, 0.99) rotate(0.3deg);
+  }
+}
+.rush-phone-squeeze {
+  transform-origin: 50% 100%;
+  animation: rush-phone-squeeze 0.35s ease-in-out infinite;
+}
+
+@keyframes rush-you-glow {
+  0%,
+  100% {
+    opacity: 0.75;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+}
+.rush-you-glow {
+  background: radial-gradient(circle, rgb(255 210 0 / 0.95) 0%, rgb(255 210 0 / 0.55) 40%, transparent 70%);
+  animation: rush-you-glow 1.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rush-phone-train .rush-jostle,
+  .rush-phone-train .rush-shake,
+  .rush-phone-train .rush-phone-squeeze,
+  .rush-phone-train .rush-you-glow,
+  .rush-phone-train .rush-pulse,
+  .rush-phone-train .rush-door-left,
+  .rush-phone-train .rush-door-right {
+    animation: none;
+  }
+  .rush-phone-train .rush-you-glow {
+    transform: translate(-50%, -50%);
+  }
+  .rush-phone-train .rush-swing {
+    animation-duration: 2.4s;
+  }
+  .rush-phone-train .rush-leave,
+  .rush-phone-train .rush-arrive {
+    animation-timing-function: ease-in-out;
+  }
+  .rush-phone-train .rush-caption {
+    animation-name: rush-phone-fade;
+  }
+}
+@keyframes rush-phone-fade {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  15%,
+  85% {
+    opacity: 1;
+  }
+}
