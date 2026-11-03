@@ -16,9 +16,9 @@ const SLOTS: Slot[] = (() => {
   const spread = [1, 4, 2, 5, 0, 7, 3, 6];
   const doorCx = DOORS.map(d => d + DOOR_W / 2);
   const slots: Slot[] = [];
-  spread.forEach(i => slots.push({ x: WINDOWS[i] + WIN_W / 2, y: 74 }));
+  spread.forEach(i => slots.push({ x: WINDOWS[i] + WIN_W / 2, y: 68 }));
   doorCx.forEach(cx => slots.push({ x: cx - 16, y: 182 }));
-  spread.forEach(i => slots.push({ x: WINDOWS[i] + WIN_W / 2 + (i % 2 ? 8 : -8), y: 120 }));
+  spread.forEach(i => slots.push({ x: WINDOWS[i] + WIN_W / 2 + (i % 2 ? 8 : -8), y: 134 }));
   doorCx.forEach(cx => slots.push({ x: cx + 16, y: 148 }));
   doorCx.forEach(cx => slots.push({ x: cx - 16, y: 114 }));
   doorCx.forEach(cx => slots.push({ x: cx + 14, y: 80 }));
@@ -140,7 +140,7 @@ const CoachBody = memo(function CoachBody({ virarFast }: { virarFast: boolean })
           WR 8008 A
         </text>
       </g>
-      <text x="610" y="214" fontSize="22" fontWeight="800" fill="#f4dc8a" fontFamily="var(--font-baloo), sans-serif">
+      <text x="548" y="214" fontSize="20" fontWeight="800" fill="#f4dc8a" fontFamily="var(--font-baloo), sans-serif">
         {virarFast ? "8.15 VIRAR FAST" : "WESTERN RAILWAY"}
       </text>
       {/* undercarriage */}
@@ -168,7 +168,7 @@ type CoachProps = {
 export const Coach = ({ trainId, riders, capacity, virarFast, latestSeats, hanger, closing, flyers }: CoachProps) => {
   const fill = capacity > 0 ? riders.length / capacity : 0;
   const scale = 1.08 - 0.28 * Math.min(fill, 1);
-  const hangerSlot = { x: DOORS[2] + DOOR_W + 22, y: 64 };
+  const hangerSlot = { x: DOORS[2] + DOOR_W + 26, y: 176 }; // off the last door, below the windows
   return (
     <div className="relative h-full w-full">
       <CoachBody virarFast={virarFast} />
@@ -186,7 +186,7 @@ export const Coach = ({ trainId, riders, capacity, virarFast, latestSeats, hange
       {riders.slice(0, SLOTS.length).map((r, i) => {
         const slot = SLOTS[i];
         const flying = flyers?.has(r.seat);
-        const pokeUp = !slot.hangOut && slot.y < 90 && fill > 0.7 ? -10 : 0;
+        const pokeUp = !slot.hangOut && slot.y < 90 && fill > 0.7 ? -8 : 0;
         return (
           <Figure
             key={`${trainId}-${r.seat}`}
@@ -223,8 +223,8 @@ export const Coach = ({ trainId, riders, capacity, virarFast, latestSeats, hange
       )}
       {virarFast && (
         <div
-          className="absolute z-30 -rotate-[10deg] rounded-[0.8cqh] border-[0.6cqh] border-[#dc2626] bg-white/90 px-[1.4cqh] font-display text-[4.2cqh] font-extrabold leading-tight tracking-wider text-[#dc2626]"
-          style={{ ...pct(860, 208), transform: "translate(-50%, -50%) rotate(-10deg)" }}
+          className="absolute z-30 rounded-[0.8cqh] border-[0.6cqh] border-[#dc2626] bg-white/90 px-[1.4cqh] font-display text-[4.2cqh] font-extrabold leading-tight tracking-wider text-[#dc2626]"
+          style={{ ...pct(130, 4), transform: "translate(-50%, -50%) rotate(-8deg)" }}
         >
           SPECIAL
         </div>

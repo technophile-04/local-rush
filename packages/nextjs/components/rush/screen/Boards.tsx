@@ -18,7 +18,7 @@ export const IndicatorBoard = ({ train, now, leaving, waiting }: IndicatorProps)
   const started = !!train && train.departsAt > 0 && !waiting;
   const secondsLeft = started ? train.departsAt - now : 0;
   const fast = !!train?.virarFast && !waiting;
-  const time = fast ? "8.15" : started ? indicatorTime(train.departsAt) : "--.--";
+  const time = fast ? "8.15" : started ? indicatorTime(train.departsAt) : "-.--";
   const destination = waiting || !train ? "NEXT TRAIN" : fast ? "VIRAR FAST" : train.destination;
   const due = leaving ? "GONE" : started ? dueLabel(secondsLeft) : "READY";
   const urgent = started && !leaving && secondsLeft <= 10;

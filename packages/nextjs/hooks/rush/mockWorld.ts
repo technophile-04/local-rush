@@ -5,8 +5,9 @@ import type { PushResult, Rider, RushStats, Ticket, TrainView } from "~~/types/r
 // capacity 30, departs when full or MOCK_DEPART_AFTER s after the first rider, teamwork needed
 // from 80% (50% on a Virar Fast), a door hanger boards with the next pusher within 15 s.
 //
-// Tabs of one browser share a single world over BroadcastChannel("rush-mock"): the oldest tab
-// is the leader (runs bots, applies pushes, broadcasts state); other tabs forward requests to it.
+// Tabs of one browser share a single world over BroadcastChannel("rush-mock"): one leader tab
+// runs bots, applies pushes and broadcasts state; other tabs forward requests to it. Visible tabs
+// outrank hidden ones (browsers throttle hidden-tab timers), then the oldest tab wins.
 
 export const CAPACITY = 30;
 export const MOCK_DEPART_AFTER = 45;
@@ -193,7 +194,7 @@ const nextBotAt = (w: MockWorld, now: number) => {
   if (hasDeparted(t, now)) return t.departsAt + rand(7, 10); // let the departure play out
   if (t.doorHanger && t.doorHanger.until >= now) return now + rand(2, 18); // sometimes they fall off
   const fill = t.riders.length / t.capacity;
-  const base = 2.2 - 1.6 * fill;
+  const base = 1.5 - 1.0 * fill;
   return now + base * rand(0.5, 1.5) * (t.virarFast ? 0.6 : 1);
 };
 
@@ -201,7 +202,7 @@ const nextBotAt = (w: MockWorld, now: number) => {
 
 type Msg =
   | { t: "hello"; from: string }
-  | { t: "state"; from: string; born: number; world: MockWorld }
+  | { t: "state"; from: string; born: number; hidden: boolean; world: MockWorld }
   | { t: "push"; from: string; req: string; address: string; name: string }
   | { t: "send"; from: string; req: string; address: string; tokenId: bigint }
   | { t: "reply"; to: string; req: string; ok: boolean; result?: PushResult; error?: string };
@@ -217,6 +218,7 @@ export class MockHub {
   private readonly born = Date.now();
   private leader = false;
   private lastLeaderSeen = 0;
+  private leaderHidden = false;
   private botAt = 0;
   private channel: BroadcastChannel | null = null;
   private listeners = new Set<() => void>();
@@ -227,6 +229,10 @@ export class MockHub {
       this.channel = new BroadcastChannel("rush-mock");
       this.channel.onmessage = e => this.onMessage(e.data as Msg);
       this.post({ t: "hello", from: this.id });
+      document.addEventListener("visibilitychange", () => {
+        // A tab coming to the front takes over from a throttled hidden leader.
+        if (!document.hidden && !this.leader && this.world && this.leaderHidden) this.becomeLeader(this.world);
+      });
       setTimeout(() => {
         if (!this.world) this.becomeLeader(createWorld());
       }, ELECTION_MS);
@@ -236,7 +242,9 @@ export class MockHub {
     setInterval(() => this.tick(), TICK_MS);
     setInterval(() => {
       if (this.leader) this.broadcast();
-      else if (this.world && Date.now() - this.lastLeaderSeen > LEADER_TIMEOUT_MS) this.becomeLeader(this.world);
+      // Hidden tabs see late heartbeats (timer throttling), so they wait much longer before taking over.
+      else if (this.world && Date.now() - this.lastLeaderSeen > LEADER_TIMEOUT_MS * (document.hidden ? 30 : 1))
+        this.becomeLeader(this.world);
     }, HEARTBEAT_MS);
   }
 
@@ -293,15 +301,17 @@ export class MockHub {
   }
 
   private broadcast() {
-    if (this.world) this.post({ t: "state", from: this.id, born: this.born, world: this.world });
+    if (this.world)
+      this.post({ t: "state", from: this.id, born: this.born, hidden: document.hidden, world: this.world });
   }
 
   private post(msg: Msg) {
     this.channel?.postMessage(msg);
   }
 
-  private outranks(from: string, born: number) {
-    return born < this.born || (born === this.born && from < this.id);
+  private outranks(msg: Extract<Msg, { t: "state" }>) {
+    if (msg.hidden !== document.hidden) return !msg.hidden;
+    return msg.born < this.born || (msg.born === this.born && msg.from < this.id);
   }
 
   private onMessage(msg: Msg) {
@@ -310,9 +320,17 @@ export class MockHub {
         if (this.leader) this.broadcast();
         break;
       case "state":
-        if (this.leader && !this.outranks(msg.from, msg.born)) return; // a younger tab; it will step down
+        if (this.leader && !this.outranks(msg)) {
+          this.broadcast(); // we outrank them; they step down on our next state
+          return;
+        }
         this.leader = false;
+        this.leaderHidden = msg.hidden;
         this.lastLeaderSeen = Date.now();
+        if (msg.hidden && !document.hidden && this.world) {
+          this.becomeLeader(msg.world.version >= this.world.version ? msg.world : this.world);
+          return;
+        }
         if (!this.world || this.world.version !== msg.world.version) this.setWorld(msg.world);
         break;
       case "push":

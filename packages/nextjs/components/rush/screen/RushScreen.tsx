@@ -12,7 +12,7 @@ import type { DoorHanger, TrainView } from "~~/types/rush";
 
 const LEAVE_MS = 5500;
 const ARRIVE_MS = 3000;
-const MAHIM_AT_MS = 1400;
+const MAHIM_AT_MS = 900;
 const CAPTION_MS = 2800;
 
 type Stage = { kind: "live" } | { kind: "leaving"; snapshot: TrainView } | { kind: "arriving" };
@@ -179,7 +179,7 @@ export const RushScreen = () => {
 
         {/* 1. indicator board, 2. station boards */}
         <div className="absolute left-[1.5cqh] top-[1cqh] h-[16.5cqh] w-[110cqh]">
-          <IndicatorBoard train={train} now={now} leaving={!!leaving} waiting={waiting} />
+          <IndicatorBoard train={leaving ?? train} now={now} leaving={!!leaving} waiting={!leaving && waiting} />
         </div>
         <div className="absolute left-[113cqh] top-[1cqh] flex h-[16.5cqh] gap-[1.4cqh]">
           <StationBoard marathi="डेवकॉन" hindi="डेवकॉन" name="DEVCON" />
