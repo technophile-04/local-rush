@@ -77,30 +77,51 @@ export function getTrainView() {
   return value;
 }
 
-export async function getTickets(rider: Address): Promise<Ticket[]> {
-  const tokenIds = await baseReadClient.readContract({ ...rushContract, functionName: "ridesOf", args: [rider] });
-  if (!tokenIds.length) return [];
-  const tickets = await baseReadClient.multicall({
-    allowFailure: false,
-    contracts: tokenIds.map(tokenId => ({ ...rushContract, functionName: "tickets", args: [tokenId] }) as const),
-  });
-  const owners = await baseReadClient.multicall({
-    allowFailure: false,
-    contracts: tokenIds.map(tokenId => ({ ...rushContract, functionName: "ownerOf", args: [tokenId] }) as const),
-  });
-  const uris = await baseReadClient.multicall({
-    allowFailure: false,
-    contracts: tokenIds.map(tokenId => ({ ...rushContract, functionName: "tokenURI", args: [tokenId] }) as const),
-  });
-  return tokenIds.map((tokenId, index) => {
+type TicketDetails = Omit<Ticket, "tokenId" | "held">;
+
+// A ticket's train, seat and artwork never change; only its owner does.
+const ticketDetails = new Map<bigint, TicketDetails>();
+
+async function readTicketDetails(tokenIds: readonly bigint[]) {
+  const missing = tokenIds.filter(tokenId => !ticketDetails.has(tokenId));
+  if (!missing.length) return;
+  console.log(`[tickets] reading tickets and tokenURI for ${missing.length} uncached token(s)`);
+  const [tickets, uris] = await Promise.all([
+    baseReadClient.multicall({
+      allowFailure: false,
+      contracts: missing.map(tokenId => ({ ...rushContract, functionName: "tickets", args: [tokenId] }) as const),
+    }),
+    baseReadClient.multicall({
+      allowFailure: false,
+      contracts: missing.map(tokenId => ({ ...rushContract, functionName: "tokenURI", args: [tokenId] }) as const),
+    }),
+  ]);
+  missing.forEach((tokenId, index) => {
     const [trainId, seat] = tickets[index];
     const metadata: unknown = JSON.parse(Buffer.from(uris[index].split(",")[1], "base64").toString("utf8"));
     const image =
       typeof metadata === "object" && metadata !== null && "image" in metadata && typeof metadata.image === "string"
         ? metadata.image
         : undefined;
-    return { tokenId, trainId, seat, held: owners[index].toLowerCase() === rider.toLowerCase(), image };
+    ticketDetails.set(tokenId, { trainId, seat, image });
   });
+}
+
+export async function getTickets(rider: Address): Promise<Ticket[]> {
+  const tokenIds = await baseReadClient.readContract({ ...rushContract, functionName: "ridesOf", args: [rider] });
+  if (!tokenIds.length) return [];
+  const [owners] = await Promise.all([
+    baseReadClient.multicall({
+      allowFailure: false,
+      contracts: tokenIds.map(tokenId => ({ ...rushContract, functionName: "ownerOf", args: [tokenId] }) as const),
+    }),
+    readTicketDetails(tokenIds),
+  ]);
+  return tokenIds.map((tokenId, index) => ({
+    tokenId,
+    ...ticketDetails.get(tokenId)!,
+    held: owners[index].toLowerCase() === rider.toLowerCase(),
+  }));
 }
 
 export function jsonWithBigInts(value: unknown) {

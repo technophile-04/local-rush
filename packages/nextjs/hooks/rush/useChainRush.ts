@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createPublicClient, encodeFunctionData, http, isAddress } from "viem";
@@ -8,6 +8,7 @@ import { waitForCallsStatus } from "viem/actions";
 import { base } from "viem/chains";
 import { useAccount, useCapabilities, useConfig, useConnect, useDisconnect, useSendCalls, useSwitchChain } from "wagmi";
 import { getConnectorClient } from "wagmi/actions";
+import { sameAddress } from "~~/components/rush/rush";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { rushContract } from "~~/services/rush/contract";
 import { fetchFeed, fetchStats, parseTickets, parseTrainView } from "~~/services/rush/feed";
@@ -90,12 +91,21 @@ export function useChainRush(): RushSource {
     enabled: !!ponderUrl,
     refetchInterval: 10_000,
   });
+  // Tickets change only through this phone's own calls or a teamwork push, so they refresh on those
+  // and otherwise poll slowly; every phone polling fast would multiply RPC reads.
   const tickets = useQuery({
     queryKey: ["rush", "tickets", address],
     queryFn: async () => parseTickets(await fetchFeed(`/api/tickets?rider=${address}`)),
     enabled: status === "ready" && !!address,
-    refetchInterval: 5_000,
+    refetchInterval: 30_000,
   });
+  const hanging = !!train.data?.doorHanger && sameAddress(train.data.doorHanger.address, address);
+  const wasHanging = useRef(false);
+  useEffect(() => {
+    // A door hanger's ticket is minted by someone else's push, so refresh once the hang resolves.
+    if (wasHanging.current && !hanging) void queryClient.invalidateQueries({ queryKey: ["rush", "tickets"] });
+    wasHanging.current = hanging;
+  }, [hanging, queryClient]);
 
   async function login(next: LoginMethod) {
     try {
