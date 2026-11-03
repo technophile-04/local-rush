@@ -2,6 +2,7 @@ import { useState } from "react";
 import { countdown, crowdLevel, hasDeparted, rushErrorText } from "../rush";
 import { LedText } from "../screen/Boards";
 import { PaperTicket } from "./PaperTicket";
+import { rushContract } from "~~/services/rush/contract";
 import { Address, AddressInput } from "@scaffold-ui/components";
 import { isAddress } from "viem";
 import { base } from "viem/chains";
@@ -157,6 +158,14 @@ const TicketCard = ({ ticket, actions }: { ticket: Ticket; actions: RushActions 
             {showArt ? "← paper ticket" : "view onchain art →"}
           </button>
         )}
+        <a
+          className="rush-stub-link"
+          href={`https://basescan.org/nft/${rushContract.address}/${ticket.tokenId}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          Basescan ↗
+        </a>
         {!ticket.held ? (
           <div className="flex flex-wrap items-center gap-x-2 text-base font-bold">
             {sentTo && isAddress(sentTo) ? (
