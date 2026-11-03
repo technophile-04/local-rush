@@ -6,6 +6,21 @@ const ANNOUNCEMENT =
 
 const COLS = "grid grid-cols-[17cqh_1fr_9cqh_11cqh_19cqh] items-baseline gap-x-[2cqh]";
 
+/** The LED font draws "." and ":" as a cross, so separators use the display font. */
+const LedText = ({ text }: { text: string }) => (
+  <>
+    {text.split(/([.:])/).map((part, i) =>
+      part === "." || part === ":" ? (
+        <span key={i} className="font-display font-extrabold">
+          {part}
+        </span>
+      ) : (
+        part
+      ),
+    )}
+  </>
+);
+
 type IndicatorProps = {
   train: TrainView | null;
   now: number;
@@ -39,7 +54,9 @@ export const IndicatorBoard = ({ train, now, leaving, waiting }: IndicatorProps)
           fast ? "rush-flash-red" : "text-[#ffb000] [text-shadow:0_0_1cqh_#ff8c00]"
         }`}
       >
-        <span>{time}</span>
+        <span>
+          <LedText text={time} />
+        </span>
         <span className="truncate">{destination}</span>
         <span>{fast ? "F" : "S"}</span>
         <span>12</span>
@@ -57,25 +74,14 @@ export const IndicatorBoard = ({ train, now, leaving, waiting }: IndicatorProps)
   );
 };
 
-/** The classic yellow station board: Marathi, Hindi, English. */
-export const StationBoard = ({
-  name,
-  marathi,
-  hindi,
-  small,
-}: {
-  name: string;
-  marathi: string;
-  hindi: string;
-  small?: boolean;
-}) => (
+/** The classic yellow station board: Devanagari over English. */
+export const StationBoard = ({ name, devanagari, small }: { name: string; devanagari: string; small?: boolean }) => (
   <div
     className={`flex flex-col items-center justify-center rounded-[0.6cqh] border-[0.6cqh] border-[#1a0f0a] bg-[#ffd200] font-display font-extrabold text-[#111] shadow-[0_1cqh_2cqh_rgba(0,0,0,0.45)] ${
       small ? "px-[2cqh] py-[0.4cqh]" : "px-[3cqh] py-[0.4cqh]"
     }`}
   >
-    <span className={`${small ? "text-[3cqh]" : "text-[3.6cqh]"} leading-[1.15]`}>{marathi}</span>
-    <span className={`${small ? "text-[3cqh]" : "text-[3.6cqh]"} leading-[1.15]`}>{hindi}</span>
+    <span className={`${small ? "text-[3.4cqh]" : "text-[5cqh]"} leading-[1.15]`}>{devanagari}</span>
     <span className={`${small ? "text-[3.8cqh]" : "text-[5cqh]"} leading-[1] tracking-[0.12em]`}>{name}</span>
   </div>
 );
@@ -149,7 +155,9 @@ export const StatsStrip = ({ stats }: { stats: RushStats }) => (
         <div key={String(t.trainId)} className={`flex justify-between ${t.virarFast ? "text-[#ff5a4f]" : ""}`}>
           <span>#{String(t.trainId)}</span>
           <span className="flex-1 px-[1.5cqh]">{t.virarFast ? "VIRAR FAST" : t.destination}</span>
-          <span>{t.riders} riders · GONE</span>
+          <span>
+            {t.riders} {t.riders === 1 ? "rider" : "riders"} · GONE
+          </span>
         </div>
       ))}
     </div>

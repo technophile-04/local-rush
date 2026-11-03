@@ -14,8 +14,11 @@ const LEAVE_MS = 5500;
 const ARRIVE_MS = 3000;
 const MAHIM_AT_MS = 900;
 const CAPTION_MS = 2800;
-// Fits a caption in the headline band (~145cqh wide, scaled up to 1.12× mid-animation).
-const captionSize = (text: string) => Math.min(7.6, 240 / text.length);
+// Fits a caption on its plate inside the headline band (~140cqh wide, 1.12× mid-animation).
+const captionSize = (text: string) => Math.min(5.8, 200 / text.length);
+// Dark plate so captions read from the back of the room against the peach wall.
+const PLATE =
+  "rush-caption whitespace-nowrap rounded-[1.4cqh] border-[0.5cqh] bg-[#1a0f0a]/90 px-[2.4cqh] py-[0.3cqh] text-center font-extrabold leading-[1.2] shadow-[0_0.8cqh_0_rgba(0,0,0,0.45)]";
 
 type Stage = { kind: "live" } | { kind: "leaving"; snapshot: TrainView } | { kind: "arriving" };
 type Caption = { id: number; text: string; teamwork: boolean; tone: "board" | "fall" };
@@ -188,7 +191,7 @@ export const RushScreen = () => {
           <IndicatorBoard train={leaving ?? train} now={now} leaving={!!leaving} waiting={!leaving && waiting} />
         </div>
         <div className="absolute left-[113cqh] top-[1cqh] flex h-[16.5cqh] gap-[1.4cqh]">
-          <StationBoard marathi="डेवकॉन" hindi="डेवकॉन" name="DEVCON" />
+          <StationBoard devanagari="डेवकॉन" name="DEVCON" />
           <PlatformBoard />
         </div>
 
@@ -196,7 +199,7 @@ export const RushScreen = () => {
         <div className="absolute left-[2cqh] top-[18cqh] z-10">
           {leaving ? (
             <div>
-              <StationBoard marathi="माहीम" hindi="माहिम" name="MAHIM" small />
+              <StationBoard devanagari="माहीम" name="MAHIM" small />
             </div>
           ) : (
             <div className="-rotate-3 rounded-[0.4cqh] border-[0.4cqh] border-[#1a0f0a] bg-[#7c3aed] px-[1.6cqh] py-[0.6cqh] text-center font-display font-extrabold leading-none text-white shadow-[0_0.8cqh_1.5cqh_rgba(0,0,0,0.4)]">
@@ -227,8 +230,8 @@ export const RushScreen = () => {
           </div>
         </div>
 
-        {/* headline band: door hanger banner > Mahim > captions */}
-        <div className="pointer-events-none absolute left-[30cqh] right-[2cqh] top-[17.5cqh] z-40 flex justify-center">
+        {/* headline band (18.5–27cqh): door hanger banner > Mahim > captions. Cameos stay out of it. */}
+        <div className="pointer-events-none absolute left-[30cqh] right-[2cqh] top-[18.5cqh] z-40 flex justify-center">
           {activeHanger && !leaving ? (
             <div className="rush-pulse flex items-center gap-[2cqh] rounded-[1.4cqh] border-[0.6cqh] border-[#1a0f0a] bg-[#ef4444] px-[2.4cqh] py-[0.6cqh] shadow-[0_0.8cqh_0_#1a0f0a]">
               <div className="flex flex-col leading-none">
@@ -243,36 +246,40 @@ export const RushScreen = () => {
             </div>
           ) : leaving && flyers && flyers.size > 0 ? (
             <div
-              className="rush-caption rush-stroke text-[8cqh] font-extrabold text-[#ffd200]"
+              key="mahim"
+              className={`${PLATE} border-[#ffd200] text-[6cqh] text-[#ffd200]`}
               style={{ ["--d" as string]: "4s" }}
             >
               Bhai, Mahim nahi!
             </div>
           ) : leaving ? (
             <div
-              className="rush-caption rush-stroke text-[8cqh] font-extrabold text-white"
+              key="paam"
+              className={`${PLATE} border-white text-[6cqh] text-white`}
               style={{ ["--d" as string]: "3s" }}
             >
               PAAAM!
             </div>
           ) : (
             caption && (
-              <div key={caption.id} className="relative max-w-full">
-                {caption.teamwork && (
-                  <div className="rush-burst absolute inset-[-3cqh] -z-10 rounded-[2cqh] bg-[conic-gradient(from_0deg,#ffd200,#ef4444,#ffd200,#ef4444,#ffd200)]" />
-                )}
-                <div
-                  className={`rush-caption rush-stroke text-balance text-center font-extrabold leading-tight ${caption.tone === "fall" ? "text-[#ff6b5e]" : "text-[#ffd200]"}`}
-                  style={{ fontSize: `${captionSize(caption.text)}cqh` }}
-                >
-                  {caption.text}
-                </div>
+              <div
+                key={caption.id}
+                className={`${PLATE} max-w-full ${
+                  caption.teamwork
+                    ? "border-[#ef4444] text-[#ffd200]"
+                    : caption.tone === "fall"
+                      ? "border-[#ff6b5e] text-[#ff6b5e]"
+                      : "border-[#ffd200] text-[#ffd200]"
+                }`}
+                style={{ fontSize: `${captionSize(caption.text)}cqh` }}
+              >
+                {caption.text}
               </div>
             )
           )}
         </div>
 
-        <Cameos paused={!!leaving} chatterAnchors={shown?.riders.length ?? 0} />
+        <Cameos paused={!!leaving} quiet={!!caption || !!activeHanger} chatterAnchors={shown?.riders.length ?? 0} />
 
         {/* 5. crowd meter, 10. stats, 9. join corner */}
         <div className="absolute inset-x-[2cqh] bottom-[1.5cqh] top-[76cqh] z-30 flex gap-[3cqh]">
