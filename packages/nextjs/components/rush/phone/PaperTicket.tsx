@@ -97,9 +97,9 @@ export const PaperTicket = ({ ticket, sent }: { ticket: Ticket; sent: boolean })
           key={stamp.text}
           className={`rush-stamp rush-stamp-${stamp.ink}`}
           style={{
-            top: `${between(rand, 30, 44) + index * 18}%`,
-            right: `${between(rand, 3, 12)}%`,
-            rotate: `${between(rand, -16, 10)}deg`,
+            top: `${between(rand, 50, 56) + index * 17}%`,
+            right: `${between(rand, 3, 10) + index * 6}%`,
+            rotate: `${between(rand, -12, 8)}deg`,
           }}
         >
           {stamp.text}
