@@ -6,7 +6,7 @@
     "codegen": "ponder codegen",
     "db": "ponder db",
     "dev": "ponder dev",
-    "lint": "eslint . --ext .ts",
+    "lint": "eslint .",
     "serve": "ponder serve",
     "start": "ponder start",
     "typecheck": "tsc"
