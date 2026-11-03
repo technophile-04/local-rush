@@ -10,6 +10,10 @@
     "isolatedModules": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
+    "jsx": "react-jsx",
+    "paths": {
+      "~~/*": ["../nextjs/*"]
+    },
 
     // Language and environment
     "moduleResolution": "bundler",

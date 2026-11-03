@@ -16,19 +16,15 @@ const chains = {
   },
 };
 
-const contractNames = Object.keys(deployedContractsForNetwork);
-
-const contracts = Object.fromEntries(contractNames.map((contractName) => {
-  return [contractName, {
-    chain: targetNetwork.name as string,
-    abi: deployedContractsForNetwork[contractName].abi,
-    address: deployedContractsForNetwork[contractName].address,
-    startBlock: deployedContractsForNetwork[contractName].deployedOnBlock || 0,
-  }];
-}));
-
 export default createConfig({
-  chains: chains,
-  contracts: contracts,
+  chains,
+  contracts: {
+    LocalRush: {
+      chain: targetNetwork.name,
+      abi: deployedContractsForNetwork.LocalRush.abi,
+      address: deployedContractsForNetwork.LocalRush.address,
+      startBlock: deployedContractsForNetwork.LocalRush.deployedOnBlock,
+    },
+  },
 });
 
