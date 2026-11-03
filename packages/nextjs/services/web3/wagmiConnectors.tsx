@@ -46,7 +46,7 @@ export const wagmiConnectors = () => {
     ],
 
     {
-      appName: "scaffold-eth-2",
+      appName: "Mumbai Local Rush",
       projectId: scaffoldConfig.walletConnectProjectId,
     },
   );
