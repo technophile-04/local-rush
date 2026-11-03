@@ -14,6 +14,8 @@ const LEAVE_MS = 5500;
 const ARRIVE_MS = 3000;
 const MAHIM_AT_MS = 900;
 const CAPTION_MS = 2800;
+// Fits a caption in the headline band (~145cqh wide, scaled up to 1.12× mid-animation).
+const captionSize = (text: string) => Math.min(7.6, 240 / text.length);
 
 type Stage = { kind: "live" } | { kind: "leaving"; snapshot: TrainView } | { kind: "arriving" };
 type Caption = { id: number; text: string; teamwork: boolean; tone: "board" | "fall" };
@@ -96,7 +98,7 @@ export const RushScreen = () => {
     const fresh = train.riders.slice(from);
     setLatestSeats(new Set(fresh.map(r => r.seat)));
     const teamwork = fresh.some(r => r.teamwork);
-    const names = fresh.map(r => r.name).join(" & ");
+    const names = fresh.length <= 2 ? fresh.map(r => r.name).join(" & ") : `${fresh[0].name} +${fresh.length - 1} more`;
     setCaption({
       id: Date.now(),
       text: `${teamwork ? "TEAMWORK PUSH" : "Chadh gaya!"} — ${names}`,
@@ -255,12 +257,13 @@ export const RushScreen = () => {
             </div>
           ) : (
             caption && (
-              <div key={caption.id} className="relative">
+              <div key={caption.id} className="relative max-w-full">
                 {caption.teamwork && (
                   <div className="rush-burst absolute inset-[-3cqh] -z-10 rounded-[2cqh] bg-[conic-gradient(from_0deg,#ffd200,#ef4444,#ffd200,#ef4444,#ffd200)]" />
                 )}
                 <div
-                  className={`rush-caption rush-stroke whitespace-nowrap text-[7.6cqh] font-extrabold ${caption.tone === "fall" ? "text-[#ff6b5e]" : "text-[#ffd200]"}`}
+                  className={`rush-caption rush-stroke text-balance text-center font-extrabold leading-tight ${caption.tone === "fall" ? "text-[#ff6b5e]" : "text-[#ffd200]"}`}
+                  style={{ fontSize: `${captionSize(caption.text)}cqh` }}
                 >
                   {caption.text}
                 </div>
