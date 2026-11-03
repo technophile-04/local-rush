@@ -732,6 +732,7 @@
   line-height: 1.6rem;
   font-weight: 700;
   color: #ffd200;
+}
 /* Phone train (components/rush/phone/PhoneTrain.tsx) */
 @keyframes rush-phone-squeeze {
   0%,

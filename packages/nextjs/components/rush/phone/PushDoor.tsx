@@ -116,8 +116,9 @@ export const PushDoor = ({ look, effort, sign, onTap, onPush }: PushDoorProps) =
   const shoving = canPush || look === "pushing";
   const shown = look === "pushing" ? 1 : meter;
   const ladder =
+    // The chain hasn't answered yet: you might board or end up hanging, so don't promise "Chadh gaya!".
     look === "pushing"
-      ? "Chadh gaya!"
+      ? "Pushing…"
       : canPush && meter > 0
         ? meter < 0.5
           ? "Aage chalo!"
