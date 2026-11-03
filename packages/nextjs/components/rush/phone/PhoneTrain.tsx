@@ -62,7 +62,7 @@ const HangRing = ({ left, total }: { left: number; total: number }) => {
   return (
     <div
       className="absolute z-[70] flex h-[11cqh] w-[11cqh] items-center justify-center"
-      style={{ ...pct(HANGER_SLOT.x + 72, HANGER_SLOT.y - 78), transform: "translate(-50%, -50%)" }}
+      style={{ ...pct(HANGER_SLOT.x - 4, HANGER_SLOT.y - 112), transform: "translate(-50%, -50%)" }}
     >
       <svg viewBox="0 0 40 40" className="absolute inset-0 h-full w-full -rotate-90">
         <circle cx="20" cy="20" r={r} fill="#1a0f0a" stroke="#3a2a22" strokeWidth="5" />
@@ -157,6 +157,12 @@ export const PhoneTrain = ({ train, now, me, pushing }: PhoneTrainProps) => {
     setTimeout(() => setFalling(null), 1600);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeHanger?.address, activeHanger?.until]);
+
+  useEffect(() => {
+    if (rodeOff === null) return;
+    const t = setTimeout(() => setRodeOff(null), 15000);
+    return () => clearTimeout(t);
+  }, [rodeOff]);
 
   useEffect(() => {
     if (!caption) return;
@@ -283,6 +289,10 @@ export const PhoneTrain = ({ train, now, me, pushing }: PhoneTrainProps) => {
             {hangerIsMe && !hanger?.falling ? (
               <div className="rush-pulse rounded-[1.2cqh] border-[0.5cqh] border-[#1a0f0a] bg-[#ef4444] px-[2cqh] py-[0.4cqh] text-center font-display text-[5.6cqh] font-extrabold leading-tight text-white">
                 Hold on! One more push gets you in
+              </div>
+            ) : hanger && !hanger.falling && !caption ? (
+              <div className="rush-pulse max-w-full truncate rounded-[1.2cqh] border-[0.5cqh] border-[#1a0f0a] bg-[#ef4444] px-[2cqh] py-[0.4cqh] text-center font-display text-[5.6cqh] font-extrabold leading-tight text-white">
+                {hanger.name} needs one more push!
               </div>
             ) : caption ? (
               <div
