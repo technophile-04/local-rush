@@ -75,6 +75,11 @@ export function parseTickets(value: unknown): Ticket[] {
       seat: number(ticket.seat),
       held: boolean(ticket.held),
       image: ticket.image === undefined ? undefined : text(ticket.image),
+      destination: ticket.destination === undefined ? undefined : text(ticket.destination),
+      crowd: ticket.crowd === undefined ? undefined : text(ticket.crowd),
+      teamwork: ticket.teamwork === undefined ? undefined : boolean(ticket.teamwork),
+      mahim: ticket.mahim === undefined ? undefined : boolean(ticket.mahim),
+      virarFast: ticket.virarFast === undefined ? undefined : boolean(ticket.virarFast),
     };
   });
 }

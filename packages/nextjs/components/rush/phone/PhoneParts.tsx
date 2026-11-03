@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { countdown, crowdLevel, hasDeparted, rushErrorText } from "../rush";
+import { PaperTicket } from "./PaperTicket";
 import { Address, AddressInput } from "@scaffold-ui/components";
 import { isAddress } from "viem";
 import { base } from "viem/chains";
@@ -50,18 +51,21 @@ export const LoginPanel = ({ session }: { session: RushSession }) => {
   const [error, setError] = useState<string>();
   if (session.status === "ready") {
     return (
-      <div className="flex items-center justify-between rounded-xl bg-black/30 px-4 py-2 text-sm font-bold text-white">
-        <span className="flex min-w-0 items-center gap-2">
-          ✓ {session.method ? METHOD_NAMES[session.method] : "Logged in"}
-          {session.address && isAddress(session.address) && (
-            <span className="rush-sui rush-sui-chip">
-              <Address address={session.address} chain={base} size="sm" onlyEnsOrAddress />
-            </span>
-          )}
-        </span>
-        <button className="btn btn-ghost btn-xs text-white/80" onClick={session.logout}>
-          logout
-        </button>
+      <div className="rush-riding flex items-center gap-3 rounded-2xl border-2 border-[#ffd200]/30 bg-[#2a0d12]/80 px-3 py-2.5 text-white">
+        {session.address && isAddress(session.address) ? (
+          <div className="rush-sui rush-sui-chip min-w-0 flex-1">
+            <div className="rush-riding-label">Riding as</div>
+            <Address address={session.address} chain={base} size="xl" />
+          </div>
+        ) : (
+          <div className="flex-1 font-display text-lg font-extrabold">Logged in</div>
+        )}
+        <div className="flex shrink-0 flex-col items-end gap-1.5">
+          {session.method && <span className="rush-riding-tag">{METHOD_NAMES[session.method]}</span>}
+          <button className="btn btn-ghost btn-xs h-6 min-h-6 px-1 text-white/70" onClick={session.logout}>
+            logout
+          </button>
+        </div>
       </div>
     );
   }
@@ -130,31 +134,27 @@ const TicketCard = ({ ticket, actions }: { ticket: Ticket; actions: RushActions 
   const [sentTo, setSentTo] = useState<string>();
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string>();
+  const [showArt, setShowArt] = useState(false);
   return (
-    <div className="card overflow-hidden border-4 border-[#1a0f0a] bg-[#fdf3d0] text-[#1a0f0a] shadow-[0_6px_0_#1a0f0a]">
-      {ticket.image ? (
+    <div className="flex flex-col">
+      {showArt && ticket.image ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={ticket.image} alt={`Ticket #${ticket.tokenId}`} className="w-full" />
+        <img
+          src={ticket.image}
+          alt={`Ticket #${ticket.tokenId}`}
+          className="w-full rounded-lg border-4 border-[#1a0f0a] shadow-[0_6px_0_#1a0f0a]"
+        />
       ) : (
-        <div className="flex border-b-4 border-dashed border-[#1a0f0a]/40">
-          <div className="flex w-20 shrink-0 flex-col items-center justify-center bg-[#7a1f2b] py-3 text-white">
-            <span className="font-display text-xs font-bold">SEAT</span>
-            <span className="font-display text-3xl font-extrabold leading-none">{ticket.seat}</span>
-          </div>
-          <div className="flex-1 px-3 py-2">
-            <div className="flex justify-between font-display text-xs font-bold tracking-widest text-[#7a1f2b]">
-              <span>WESTERN RAILWAY · II CLASS</span>
-            </div>
-            <div className="font-display text-xl font-extrabold leading-tight">DEVCON · PF 8</div>
-            <div className="text-sm font-bold">
-              Train #{String(ticket.trainId)} · Ticket #{String(ticket.tokenId)}
-            </div>
-          </div>
-        </div>
+        <PaperTicket ticket={ticket} sent={!ticket.held} />
       )}
-      <div className="px-3 py-2">
+      <div className="rush-stub">
+        {ticket.image && (
+          <button className="rush-stub-link" onClick={() => setShowArt(!showArt)}>
+            {showArt ? "← paper ticket" : "view onchain art →"}
+          </button>
+        )}
         {!ticket.held ? (
-          <div className="flex flex-wrap items-center gap-x-2 font-display text-lg font-extrabold text-green-700">
+          <div className="flex flex-wrap items-center gap-x-2 text-base font-bold">
             {sentTo && isAddress(sentTo) ? (
               <>
                 Sent to
@@ -168,20 +168,17 @@ const TicketCard = ({ ticket, actions }: { ticket: Ticket; actions: RushActions 
             )}
           </div>
         ) : !open ? (
-          <button
-            className="btn btn-sm btn-outline border-2 border-[#1a0f0a] text-[#1a0f0a]"
-            onClick={() => setOpen(true)}
-          >
+          <button className="btn btn-sm rush-stub-btn" onClick={() => setOpen(true)}>
             Send to my wallet
           </button>
         ) : (
           <div className="flex flex-col gap-2">
-            <div className="rush-sui rush-sui-ticket">
+            <div className="rush-sui rush-sui-ticket rush-sui-send">
               <AddressInput value={to} onChange={setTo} placeholder="ENS name or 0x address" disabled={sending} />
             </div>
             <div className="flex gap-2">
               <button
-                className="btn btn-sm flex-1 border-2 border-[#1a0f0a] bg-[#7a1f2b] text-white hover:bg-[#93283a]"
+                className="btn btn-sm rush-stub-btn rush-stub-btn-go flex-1"
                 // AddressInput reports the typed ENS name first and the resolved 0x address after lookup.
                 disabled={!isAddress(to) || sending}
                 onClick={async () => {

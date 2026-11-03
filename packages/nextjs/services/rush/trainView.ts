@@ -98,12 +98,32 @@ async function readTicketDetails(tokenIds: readonly bigint[]) {
   ]);
   missing.forEach((tokenId, index) => {
     const [trainId, seat] = tickets[index];
-    const metadata: unknown = JSON.parse(Buffer.from(uris[index].split(",")[1], "base64").toString("utf8"));
-    const image =
-      typeof metadata === "object" && metadata !== null && "image" in metadata && typeof metadata.image === "string"
-        ? metadata.image
-        : undefined;
-    ticketDetails.set(tokenId, { trainId, seat, image });
+    const metadata = JSON.parse(Buffer.from(uris[index].split(",")[1], "base64").toString("utf8")) as {
+      image?: unknown;
+      attributes?: { trait_type?: unknown; value?: unknown }[];
+    };
+    const trait = (name: string) =>
+      Array.isArray(metadata.attributes) ? metadata.attributes.find(a => a?.trait_type === name)?.value : undefined;
+    const textTrait = (name: string) => {
+      const value = trait(name);
+      return typeof value === "string" ? value : undefined;
+    };
+    const boolTrait = (name: string) => {
+      const value = trait(name);
+      return typeof value === "boolean" ? value : undefined;
+    };
+    const mahim = textTrait("Mahim");
+    ticketDetails.set(tokenId, {
+      trainId,
+      seat,
+      image: typeof metadata.image === "string" ? metadata.image : undefined,
+      destination: textTrait("Destination"),
+      crowd: textTrait("Crowd"),
+      teamwork: boolTrait("Teamwork Push"),
+      // The contract writes "Bhai, Mahim nahi!" for riders who flew off, "Made it past Mahim" otherwise.
+      mahim: mahim === undefined ? undefined : mahim.startsWith("Bhai"),
+      virarFast: boolTrait("Virar Fast"),
+    });
   });
 }
 

@@ -422,3 +422,314 @@
   color: #ffd200;
   font-weight: 800;
 }
+
+/* ---- Paper UTS ticket (phone "My tickets") ----
+   Ticket print is a thermal/dot-matrix look: bold monospace, slightly faded and uneven. */
+.rush-paper,
+.rush-stub {
+  --ticket-ink: #2b2333;
+  --ticket-paper: #f6f1e4;
+  --font-ticket: "Courier New", Courier, ui-monospace, monospace;
+}
+.rush-paper {
+  position: relative;
+  overflow: hidden;
+  rotate: var(--tilt);
+  margin: 0.35rem 0.6rem 0;
+  padding: 0.85rem 1rem 0.8rem;
+  color: var(--ticket-ink);
+  font-family: var(--font-ticket);
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.32;
+  letter-spacing: 0.01em;
+  /* Dog-eared top-right corner. */
+  clip-path: polygon(0 0, calc(100% - var(--ear)) 0, 100% var(--ear), 100% 100%, 0 100%);
+  background:
+    /* Fold creases: a soft shadow line with a highlight next to it. */
+    linear-gradient(
+      var(--crease-angle),
+      transparent calc(var(--crease-a) - 1.2%),
+      rgb(80 60 40 / 0.13) var(--crease-a),
+      rgb(255 255 255 / 0.55) calc(var(--crease-a) + 0.5%),
+      transparent calc(var(--crease-a) + 2%)
+    ),
+    linear-gradient(
+      calc(var(--crease-angle) - 82deg),
+      transparent calc(var(--crease-b) - 1%),
+      rgb(80 60 40 / 0.1) var(--crease-b),
+      rgb(255 255 255 / 0.45) calc(var(--crease-b) + 0.4%),
+      transparent calc(var(--crease-b) + 1.6%)
+    ),
+    /* Faint repeating INDIAN RAILWAYS microtext. */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='22'%3E%3Ctext x='0' y='9' font-family='Arial' font-size='7' font-weight='700' fill='%23c4708a' fill-opacity='0.2'%3EINDIAN RAILWAYS · INDIAN RAILWAYS ·%3C/text%3E%3Ctext x='-40' y='20' font-family='Arial' font-size='7' font-weight='700' fill='%23c4708a' fill-opacity='0.2'%3EINDIAN RAILWAYS · INDIAN RAILWAYS ·%3C/text%3E%3C/svg%3E"),
+    /* Guilloche-ish waves. */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='16'%3E%3Cpath d='M0 8 Q15 0 30 8 T60 8' fill='none' stroke='%237a8cc4' stroke-opacity='0.16' stroke-width='0.8'/%3E%3Cpath d='M0 12 Q15 4 30 12 T60 12' fill='none' stroke='%23c4708a' stroke-opacity='0.13' stroke-width='0.8'/%3E%3C/svg%3E"),
+    /* Paper grain. */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.3 0 0 0 0 0.25 0 0 0 0.16 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse at 30% 20%, #fbf8ef, transparent 70%),
+    linear-gradient(170deg, #f8f2e6, #efe4d6 60%, #f3ead9);
+  box-shadow:
+    0 1px 1px rgb(0 0 0 / 0.2),
+    0 8px 18px -6px rgb(0 0 0 / 0.55);
+  filter: drop-shadow(0 0 0 transparent);
+}
+/* The folded-over corner flap. */
+.rush-paper::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: var(--ear);
+  height: var(--ear);
+  background: linear-gradient(225deg, transparent 50%, #ddd0b8 50%, #e9dfcb 75%, #d2c3a7);
+  box-shadow: -1px 1px 2px rgb(0 0 0 / 0.18);
+}
+.rush-paper-print {
+  position: relative;
+  opacity: var(--ink-fade);
+  /* Thermal heads print a touch soft and uneven. */
+  text-shadow:
+    0.3px 0 0 currentColor,
+    0 0 0.6px rgb(43 35 51 / 0.6);
+}
+.rush-paper-title {
+  margin: 0.1rem 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+.rush-paper-route {
+  margin: 0.25rem 0;
+  font-size: 1.12rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+.rush-paper-label {
+  opacity: 0.8;
+}
+.rush-paper-small {
+  font-size: 0.66rem;
+  line-height: 1.3;
+  font-weight: 700;
+  opacity: 0.85;
+}
+.rush-paper-rule {
+  margin: 0.3rem 0;
+  border-top: 1.5px dashed rgb(43 35 51 / 0.45);
+}
+
+/* Rubber stamps: uneven ink via a noise mask, multiplied into the paper. */
+.rush-stamp {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.15rem 0.5rem;
+  border: 2.5px solid currentColor;
+  border-radius: 6px;
+  outline: 1px solid currentColor;
+  outline-offset: 2px;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  mix-blend-mode: multiply;
+  opacity: 0.78;
+  pointer-events: none;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 2.1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.rush-stamp-sub {
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+}
+.rush-stamp-red {
+  color: #c8102e;
+}
+.rush-stamp-blue {
+  color: #1f3fa8;
+}
+.rush-stamp-violet {
+  color: #6b1fa8;
+}
+.rush-stamp-cancel {
+  top: 46%;
+  left: 12%;
+  color: #1f6b3a;
+  font-size: 1.3rem;
+  opacity: 0.42;
+  border-radius: 999px;
+  padding: 0.25rem 1rem;
+}
+
+/* The flat counterfoil under each ticket: art toggle and "Send to my wallet". */
+.rush-stub {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: -0.15rem 0.6rem 0;
+  padding: 0.6rem 0.8rem 0.7rem;
+  border-top: 2px dashed rgb(43 35 51 / 0.35);
+  border-radius: 0 0 6px 6px;
+  background: var(--ticket-paper);
+  color: var(--ticket-ink);
+  font-family: var(--font-ticket);
+  box-shadow: 0 6px 14px -6px rgb(0 0 0 / 0.5);
+}
+.rush-stub-link {
+  align-self: flex-end;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  opacity: 0.75;
+}
+.rush-stub-btn {
+  height: 2.5rem;
+  min-height: 2.5rem;
+  border: 2px solid var(--ticket-ink);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--ticket-ink);
+  font-family: var(--font-ticket);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  box-shadow: none;
+}
+.rush-stub-btn:hover {
+  background: rgb(43 35 51 / 0.08);
+}
+.rush-stub-btn-go {
+  background: var(--ticket-ink);
+  color: var(--ticket-paper);
+}
+.rush-stub-btn-go:hover {
+  background: #43384d;
+}
+.rush-stub-btn-go:disabled {
+  background: rgb(43 35 51 / 0.25);
+  color: rgb(43 35 51 / 0.6);
+  border-color: rgb(43 35 51 / 0.3);
+}
+
+/* AddressInput on the counterfoil: ink on paper, ticket print face, one 40px row where the
+   ENS avatar, name and blockie are all the same height and centred. */
+.rush-sui-send {
+  --font-sans: var(--font-ticket);
+  --color-sui-input-background: #fffdf6;
+  --color-sui-input-border: var(--ticket-ink);
+  --color-sui-input-text: var(--ticket-ink);
+  --color-sui-accent: var(--ticket-ink);
+  --color-sui-base-content: var(--ticket-ink);
+}
+.rush-sui-send > div {
+  align-items: center;
+  height: 2.75rem;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.rush-sui-send input {
+  height: 100%;
+  min-height: 0;
+  padding: 0 0.6rem;
+  font-family: var(--font-ticket);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+.rush-sui-send img {
+  width: 30px;
+  height: 30px;
+  flex: none;
+  object-fit: cover;
+  border-radius: 4px;
+}
+/* The library's prefix (ENS avatar + name) and suffix blockie. */
+.rush-sui-send > div > div:first-child:not(input) {
+  align-self: stretch;
+  gap: 0.4rem;
+  padding: 0 0.5rem 0 0.35rem;
+  background: rgb(43 35 51 / 0.08);
+  border-right: 1.5px dashed rgb(43 35 51 / 0.4);
+}
+.rush-sui-send > div > div:first-child span {
+  width: auto;
+  display: flex;
+  align-items: center;
+}
+.rush-sui-send .text-sui-accent {
+  padding: 0;
+  color: var(--ticket-ink);
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+.rush-sui-send .animate-pulse {
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  background: rgb(43 35 51 / 0.15);
+}
+.rush-sui-send > div > img:last-child {
+  margin-right: 0.4rem;
+}
+
+/* ---- "Riding as" chip at the top of the phone ---- */
+.rush-riding-label {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgb(255 210 0 / 0.75);
+  line-height: 1;
+  margin-bottom: 0.3rem;
+}
+.rush-riding-tag {
+  border: 1.5px solid #ffd200;
+  border-radius: 999px;
+  padding: 0 0.55rem;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.35rem;
+  color: #ffd200;
+  white-space: nowrap;
+}
+.rush-sui-chip > div:last-child {
+  gap: 0.6rem;
+  min-width: 0;
+}
+.rush-sui-chip > div:last-child > div:first-child img {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  object-fit: cover;
+  box-shadow: 0 0 0 2px #ffd200;
+}
+.rush-sui-chip > div:last-child > div:last-child {
+  min-width: 0;
+}
+.rush-sui-chip > div:last-child > div:last-child > span:first-child {
+  margin-left: 0;
+  font-size: 1.3rem;
+  line-height: 1.6rem;
+  color: #ffd200;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rush-sui-chip > div:last-child > div:last-child > div span {
+  margin-left: 0;
+  font-size: 0.85rem;
+  line-height: 1.1rem;
+  color: rgb(255 255 255 / 0.75);
+}
+/* No ENS name: the short address is the headline. */
+.rush-sui-chip > div:last-child > div:last-child > div:first-child span {
+  font-size: 1.3rem;
+  line-height: 1.6rem;
+  font-weight: 700;
+  color: #ffd200;
+}

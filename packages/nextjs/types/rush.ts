@@ -49,6 +49,12 @@ export type Ticket = {
   seat: number;
   held: boolean; // still in the rider's account; false once sent to their own wallet
   image?: string; // data: URI from tokenURI
+  // Decoded tokenURI attributes; absent when the metadata couldn't be read.
+  destination?: string;
+  crowd?: string; // "Comfortable" | "Fourth seat" | "Feet off floor" | "Door pe latak raha"
+  teamwork?: boolean;
+  mahim?: boolean; // flew off the roof at Mahim
+  virarFast?: boolean;
 };
 
 export type RushSession = {

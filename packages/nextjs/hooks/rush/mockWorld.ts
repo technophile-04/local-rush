@@ -1,4 +1,4 @@
-import { hasDeparted } from "~~/components/rush/rush";
+import { fliesAtMahim, hasDeparted } from "~~/components/rush/rush";
 import type { PushResult, Rider, RushStats, Ticket, TrainView } from "~~/types/rush";
 
 // A simulated LocalRush contract plus a bot crowd. Same rules as the contract, faster clock:
@@ -10,6 +10,16 @@ import type { PushResult, Rider, RushStats, Ticket, TrainView } from "~~/types/r
 // outrank hidden ones (browsers throttle hidden-tab timers), then the oldest tab wins.
 
 export const CAPACITY = 30;
+
+// Same bands as the contract's ticket crowd trait: under 40%, 70%, 90% of capacity.
+const mockCrowd = (seat: number, capacity: number) =>
+  seat * 100 < capacity * 40
+    ? "Comfortable"
+    : seat * 100 < capacity * 70
+      ? "Fourth seat"
+      : seat * 100 < capacity * 90
+        ? "Feet off floor"
+        : "Door pe latak raha";
 export const MOCK_DEPART_AFTER = 45;
 export const HANG_SECONDS = 15;
 const FIRST_TRAIN_ID = 41n; // train #42 is the first 8:15 Virar Fast, so rehearsals see chaos mode early
@@ -129,7 +139,17 @@ const board = (w: MockWorld, address: string, name: string, teamwork: boolean, n
   if (!address.startsWith(BOT_PREFIX)) {
     const key = address.toLowerCase();
     w.tickets[key] = [
-      { tokenId: rider.tokenId, trainId: t.trainId, seat: rider.seat, held: true },
+      {
+        tokenId: rider.tokenId,
+        trainId: t.trainId,
+        seat: rider.seat,
+        held: true,
+        destination: t.destination,
+        crowd: mockCrowd(rider.seat, t.capacity),
+        teamwork: rider.teamwork,
+        mahim: fliesAtMahim(t.trainId, rider.seat),
+        virarFast: t.virarFast,
+      },
       ...(w.tickets[key] ?? []),
     ];
   }
