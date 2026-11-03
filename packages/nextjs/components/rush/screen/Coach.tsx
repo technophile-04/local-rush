@@ -133,7 +133,7 @@ const CoachBody = memo(function CoachBody({ virarFast }: { virarFast: boolean })
         </g>
       ))}
       {/* round railway emblem badges on the band */}
-      {[60, 700, 950].map(cx => (
+      {(virarFast ? [60, 950] : [60, 700, 950]).map(cx => (
         <g key={cx}>
           <circle cx={cx} cy={205} r={17} fill="#f3f1ee" stroke="#1a0f0a" strokeWidth="2.5" />
           <circle cx={cx} cy={205} r={11} fill="#facc15" stroke="#1d4ed8" strokeWidth="3" />
