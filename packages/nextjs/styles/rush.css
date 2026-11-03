@@ -921,3 +921,17 @@
     animation: none;
   }
 }
+
+/* Phone page backdrop: plain charcoal on phones; a night platform on wide screens. */
+.rush-phone-page {
+  background-color: #1d1f23;
+  background-image: radial-gradient(ellipse at top, #31353b, transparent 60%);
+}
+@media (min-width: 768px) {
+  .rush-phone-page {
+    background-attachment: fixed;
+    background-position: center bottom;
+    background-size: cover;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 900' preserveAspectRatio='xMidYMax slice'><defs><linearGradient id='s' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%2314161a'/><stop offset='1' stop-color='%2326292e'/></linearGradient><radialGradient id='g' cx='0.5' cy='0' r='0.6'><stop offset='0' stop-color='%23a8175f' stop-opacity='0.28'/><stop offset='1' stop-color='%23a8175f' stop-opacity='0'/></radialGradient><pattern id='d' width='18' height='18' patternUnits='userSpaceOnUse'><circle cx='9' cy='9' r='3' fill='%23c79f00'/></pattern><g id='c'><rect x='0' y='0' width='420' height='150' rx='14' fill='%232c2f35'/><rect x='0' y='104' width='420' height='22' fill='%23a8175f' opacity='0.45'/><rect x='24' y='28' width='46' height='54' rx='5' fill='%231c1e22'/><rect x='92' y='20' width='44' height='110' fill='%231c1e22'/><rect x='158' y='28' width='46' height='54' rx='5' fill='%231c1e22'/><rect x='222' y='28' width='46' height='54' rx='5' fill='%231c1e22'/><rect x='290' y='20' width='44' height='110' fill='%231c1e22'/><rect x='356' y='28' width='46' height='54' rx='5' fill='%231c1e22'/></g></defs><rect width='1600' height='900' fill='url(%23s)'/><rect width='1600' height='900' fill='url(%23g)'/><path d='M0 120 H1600 M0 150 H1600' stroke='%233a3d42' stroke-width='3'/><text x='800' y='360' text-anchor='middle' font-family='Arial Black, Arial, sans-serif' font-weight='900' font-size='132' fill='%23ffffff' fill-opacity='0.035' letter-spacing='18'>DEVCON · PLATFORM 8</text><use href='%23c' x='-60' y='540'/><use href='%23c' x='380' y='540'/><use href='%23c' x='820' y='540'/><use href='%23c' x='1260' y='540'/><rect x='0' y='700' width='1600' height='200' fill='%232b2e33'/><rect x='0' y='690' width='1600' height='26' fill='%23ffd200'/><rect x='0' y='690' width='1600' height='26' fill='url(%23d)' opacity='0.55'/></svg>");
+  }
+}

@@ -109,7 +109,7 @@ export const RushPhone = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#1d1f23] bg-[radial-gradient(ellipse_at_top,#31353b,transparent_60%)] font-display text-white">
+    <div className="rush-phone-page min-h-screen font-display text-white">
       <div className="mx-auto flex max-w-md flex-col gap-4 px-4 pb-10 pt-4">
         <MiniBoard train={train} now={now} />
         <PhoneTrain train={train} now={now} me={me} pushing={state.kind === "pushing"} kick={kick} />
