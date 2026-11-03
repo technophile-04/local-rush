@@ -147,13 +147,15 @@ export const PushDoor = ({ look, effort, sign, onTap, onPush }: PushDoorProps) =
         }`}
       >
         <div key={kicks} className={`absolute inset-0 ${kicks > 0 && canPush ? "rush-door-kick" : ""}`}>
-          {/* coach body: cream upper band with the stencilled PUSH, maroon below */}
-          <div className="absolute inset-0 overflow-hidden rounded-t-[2.2rem] rounded-b-lg border-[5px] border-[#1a0f0a] bg-[#7a1f2b] shadow-[0_12px_0_#1a0f0a]">
-            <div className="absolute inset-x-0 top-0 h-[4.6rem] bg-[#f4dc8a]">
-              <div className="absolute inset-x-0 top-2 h-2 bg-[#7a1f2b]" />
+          {/* today's WR local: off-white body, magenta stripe and door panels, light grey frames */}
+          <div
+            className={`absolute inset-0 overflow-hidden rounded-t-[2.2rem] rounded-b-lg border-[5px] border-[#1a0f0a] bg-[#f3f1ee] shadow-[0_12px_0_#1a0f0a]`}
+          >
+            <div className={`absolute inset-x-0 top-0 h-[4.6rem] bg-[#f3f1ee]`}>
+              <div className={`absolute inset-x-0 top-2 h-2 bg-[#a8175f]`} />
               <div
                 className={`absolute inset-x-0 top-[1.15rem] text-center font-display text-[2.9rem] font-extrabold leading-none tracking-[0.28em] ${
-                  canPush ? "text-[#7a1f2b]" : "text-[#7a1f2b]/55"
+                  canPush ? `text-[#a8175f]` : `text-[#a8175f]/50`
                 }`}
                 style={{
                   WebkitMaskImage: "linear-gradient(to bottom, #000 0 47%, transparent 47% 55%, #000 55%)",
@@ -167,14 +169,27 @@ export const PushDoor = ({ look, effort, sign, onTap, onPush }: PushDoorProps) =
             {/* rivets and grime */}
             <div className="absolute inset-x-3 top-[4.9rem] flex justify-between">
               {[0, 1, 2, 3, 4, 5].map(i => (
-                <span key={i} className="h-1.5 w-1.5 rounded-full bg-[#4a1219]" />
+                <span key={i} className={`h-1.5 w-1.5 rounded-full bg-[#9ca3af]`} />
               ))}
             </div>
-            <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/35 to-transparent" />
+            {/* the slid-back magenta door panels either side, each with a tall narrow window */}
+            {["left-0", "right-0"].map(side => (
+              <div
+                key={side}
+                className={`absolute ${side} top-[4.95rem] bottom-[1.5rem] w-[1.45rem] border-y-[3px] border-[#c9ccd0] bg-[#a8175f]`}
+              >
+                <div
+                  className={`mx-auto mt-3 h-[55%] w-[0.45rem] rounded-full border-2 border-[#c9ccd0] bg-[#1f2a33]`}
+                />
+              </div>
+            ))}
+            <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/20 to-transparent" />
           </div>
 
           {/* the doorway */}
-          <div className="absolute inset-x-[1.6rem] top-[5.4rem] bottom-[2.1rem] overflow-hidden rounded-t-md border-[4px] border-[#1a0f0a] bg-gradient-to-b from-[#120c0a] via-[#1f1512] to-[#2b1f1a]">
+          <div
+            className={`absolute inset-x-[1.6rem] top-[5.4rem] bottom-[2.1rem] overflow-hidden rounded-t-md border-[4px] border-[#1a0f0a] outline outline-[4px] outline-[#c9ccd0] bg-gradient-to-b from-[#120c0a] via-[#1f1512] to-[#2b1f1a]`}
+          >
             {/* ceiling light and the crowd inside */}
             <div className="absolute inset-x-6 top-1 h-1.5 rounded-full bg-[#fff7d6]/70 blur-[1px]" />
             <div className={look === "crowded" || look === "pushing" ? "rush-crowd-sway" : ""}>
@@ -238,14 +253,11 @@ export const PushDoor = ({ look, effort, sign, onTap, onPush }: PushDoorProps) =
               )}
             </div>
 
-            {/* closed: sliding door panels with small windows */}
+            {/* closed: magenta sliding door panels with tall narrow windows */}
             {look === "closed" &&
               ["left-0 border-r-2", "right-0 border-l-2"].map(side => (
-                <div
-                  key={side}
-                  className={`absolute inset-y-0 ${side} w-1/2 border-[#1a0f0a] bg-[linear-gradient(to_bottom,#8f9396,#6b6f72)]`}
-                >
-                  <div className="mx-auto mt-6 h-16 w-3/5 rounded-sm border-2 border-[#1a0f0a] bg-[#2b1f1a]/80" />
+                <div key={side} className={`absolute inset-y-0 ${side} w-1/2 border-[#1a0f0a] bg-[#a8175f]`}>
+                  <div className="mx-auto mt-5 h-[58%] w-[28%] rounded-full border-[3px] border-[#c9ccd0] bg-[#1f2a33]" />
                 </div>
               ))}
           </div>
